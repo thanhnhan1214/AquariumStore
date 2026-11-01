@@ -1,0 +1,22 @@
+# =====================================================================
+# File .gitignore chuẩn cho dự án ASP.NET Core (.NET 10) & Visual Studio
+# =====================================================================
+.vs/
+.venv/
+__pycache__/
+bin/
+obj/
+out/
+publish/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.log
+appsettings.Development.json
+# Giữ lại toàn bộ mã nguồn, file SQL, báo cáo .md và hình ảnh sản phẩm trong wwwroot/images/products/
+!wwwroot/images/products/*
+!AquariumStoreDb.sql
+!BAO_CAO_DO_AN_2.md
+!README.md
+

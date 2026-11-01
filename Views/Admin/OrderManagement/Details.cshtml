@@ -1,0 +1,140 @@
+@model AquariumStore.Models.Order
+@{
+    ViewData["Title"] = $"Chi tiết đơn hàng #{Model.OrderId}";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var bc = Model.Status switch {
+        "Chờ xử lý" => "bg-warning text-dark",
+        "Đã xác nhận" => "bg-info text-dark",
+        "Đang giao" => "bg-primary",
+        "Hoàn thành" => "bg-success",
+        "Đã hủy" => "bg-danger",
+        _ => "bg-secondary"
+    };
+    var steps = new[] { "Chờ xử lý", "Đã xác nhận", "Đang giao", "Hoàn thành" };
+    var currentStepIndex = Array.IndexOf(steps, Model.Status);
+}
+
+<nav aria-label="breadcrumb" class="no-print"><ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/Admin/OrderManagement">Quản lý đơn hàng</a></li>
+    <li class="breadcrumb-item active">Đơn hàng #@Model.OrderId</li>
+</ol></nav>
+
+@if (Model.Status != "Đã hủy")
+{
+    <div class="card border-0 shadow-sm mb-4 no-print">
+        <div class="card-body py-3">
+            <div class="order-stepper">
+                @for (int i = 0; i < steps.Length; i++)
+                {
+                    var stateClass = i < currentStepIndex ? "completed" : (i == currentStepIndex ? "active" : "");
+                    <div class="order-step @stateClass">
+                        <div class="step-icon"><i class="bi bi-check2"></i></div>
+                        <div class="small fw-semibold">@steps[i]</div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+<div class="row g-4">
+    <!-- THÔNG TIN ĐƠN -->
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold">Phiếu đơn hàng #@Model.OrderId</h5>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge @bc fs-6">@Model.Status</span>
+                    <button type="button" onclick="window.print()" class="btn btn-sm btn-outline-secondary no-print">
+                        <i class="bi bi-printer me-1"></i>In hóa đơn
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <p class="mb-1"><i class="bi bi-person me-1"></i><strong>Khách hàng:</strong> @Model.User.FullName</p>
+                        <p class="mb-1"><i class="bi bi-envelope me-1"></i><strong>Email:</strong> @Model.User.Email</p>
+                        <p class="mb-1"><i class="bi bi-telephone me-1"></i><strong>SĐT nhận hàng:</strong> @Model.RecipientPhone</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="mb-1"><i class="bi bi-calendar me-1"></i><strong>Ngày đặt:</strong> @Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</p>
+                        <p class="mb-1"><i class="bi bi-geo-alt me-1"></i><strong>Địa chỉ giao:</strong> @Model.ShippingAddress</p>
+                        <p class="mb-1"><i class="bi bi-credit-card me-1"></i><strong>Thanh toán:</strong> @Model.PaymentMethod</p>
+                    </div>
+                </div>
+
+                <table class="table table-bordered align-middle">
+                    <thead class="table-light">
+                        <tr><th>Sản phẩm</th><th class="text-end">Đơn giá</th><th class="text-center">SL</th><th class="text-end">Thành tiền</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var d in Model.OrderDetails)
+                        {
+                            <tr>
+                                <td>@d.Product.ProductName</td>
+                                <td class="text-end">@d.UnitPrice.ToString("N0") ₫</td>
+                                <td class="text-center">@d.Quantity</td>
+                                <td class="text-end text-danger fw-bold">@d.SubTotal.ToString("N0") ₫</td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr class="fw-bold fs-5">
+                            <td colspan="3" class="text-end">Tổng cộng:</td>
+                            <td class="text-end text-danger">@Model.TotalAmount.ToString("N0") ₫</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- CẬP NHẬT TRẠNG THÁI -->
+    <div class="col-lg-4 no-print">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h6 class="mb-0"><i class="bi bi-arrow-repeat me-1"></i>Cập nhật trạng thái</h6>
+            </div>
+            <div class="card-body">
+                @if (Model.Status != "Hoàn thành" && Model.Status != "Đã hủy")
+                {
+                    <form action="/Admin/OrderManagement/UpdateStatus" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="orderId" value="@Model.OrderId" />
+                        <div class="mb-3">
+                            <select name="newStatus" class="form-select">
+                                @{
+                                    var statuses = new[] { "Chờ xử lý", "Đã xác nhận", "Đang giao", "Hoàn thành", "Đã hủy" };
+                                }
+                                @foreach (var s in statuses)
+                                {
+                                    <option value="@s" selected="@(s == Model.Status)">@s</option>
+                                }
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-check me-1"></i>Cập nhật trạng thái
+                        </button>
+                    </form>
+
+                    <div class="alert alert-warning mt-3 small mb-0">
+                        <i class="bi bi-info-circle me-1"></i>
+                        <strong>Lưu ý:</strong> Khi chuyển trạng thái thành "Đã hủy", hệ thống sẽ tự động hoàn trả tồn kho và ghi nhận vào lịch sử kho.
+                    </div>
+                }
+                else
+                {
+                    <div class="alert @(Model.Status == "Hoàn thành" ? "alert-success" : "alert-danger") mb-0">
+                        <i class="bi bi-@(Model.Status == "Hoàn thành" ? "check-circle" : "x-circle") me-1"></i>
+                        Đơn hàng đã <strong>@Model.Status.ToLower()</strong>. Không thể thay đổi trạng thái.
+                    </div>
+                }
+            </div>
+        </div>
+
+        <a href="/Admin/OrderManagement" class="btn btn-outline-secondary w-100 mt-3">
+            <i class="bi bi-arrow-left me-1"></i>Quay lại danh sách
+        </a>
+    </div>
+</div>

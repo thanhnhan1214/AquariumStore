@@ -1,0 +1,65 @@
+@model List<AquariumStore.Models.User>
+@{
+    ViewData["Title"] = "Quản lý tài khoản";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h3 class="mb-4"><i class="bi bi-people me-2"></i>Quản lý tài khoản</h3>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Họ tên</th>
+                        <th>Email</th>
+                        <th>SĐT</th>
+                        <th>Vai trò</th>
+                        <th>Ngày tạo</th>
+                        <th>Trạng thái</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var u in Model)
+                    {
+                        var roleClass = u.Role.RoleName switch {
+                            "Admin" => "bg-danger",
+                            "Staff" => "bg-primary",
+                            _ => "bg-secondary"
+                        };
+                        <tr>
+                            <td>@u.UserId</td>
+                            <td class="fw-semibold">@u.Username</td>
+                            <td>@u.FullName</td>
+                            <td>@u.Email</td>
+                            <td>@u.PhoneNumber</td>
+                            <td><span class="badge @roleClass">@u.Role.RoleName</span></td>
+                            <td>@u.CreatedAt.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                <span class="badge @(u.IsActive ? "bg-success" : "bg-secondary")">
+                                    @(u.IsActive ? "Hoạt động" : "Bị khóa")
+                                </span>
+                            </td>
+                            <td>
+                                @if (u.UserId != 1)
+                                {
+                                    <form action="/Admin/UserManagement/ToggleActive/@u.UserId" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm @(u.IsActive ? "btn-outline-danger" : "btn-outline-success")"
+                                                title="@(u.IsActive ? "Khóa tài khoản" : "Mở khóa")">
+                                            <i class="bi bi-@(u.IsActive ? "lock" : "unlock")"></i>
+                                        </button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

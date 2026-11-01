@@ -1,0 +1,165 @@
+@{
+    ViewData["Title"] = "Cẩm nang Thủy sinh & Nuôi cá cảnh";
+}
+
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Trang chủ</a></li>
+        <li class="breadcrumb-item active">Cẩm nang thủy sinh</li>
+    </ol>
+</nav>
+
+<div class="p-4 p-md-5 rounded-4 text-white mb-4 shadow-sm"
+     style="background: linear-gradient(135deg, #0077b6 0%, #0096c7 60%, #48cae4 100%);">
+    <h2 class="fw-bold mb-2"><i class="bi bi-book-half me-2"></i>Cẩm Nang Chăm Sóc Cá Cảnh & Bể Thủy Sinh</h2>
+    <p class="mb-0 opacity-90">
+        Tổng hợp kiến thức chuẩn kỹ thuật giúp người mới bắt đầu xây dựng hồ thủy sinh trong vắt, cá khỏe mạnh và lên màu rực rỡ.
+    </p>
+</div>
+
+<div class="row g-4 mb-4">
+    <!-- BẢNG THÔNG SỐ NƯỚC CHUẨN -->
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-droplet-half text-primary me-2"></i>1. Bảng thông số nước khuyến nghị theo dòng sinh vật</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Nhóm sinh vật</th>
+                                <th>Nhiệt độ</th>
+                                <th>Độ pH</th>
+                                <th>Thay nước</th>
+                                <th>Độ khó</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="fw-semibold">Cá Betta / Guppy</td>
+                                <td>25 – 29°C</td>
+                                <td>6.5 – 7.5</td>
+                                <td>30% / 3–4 ngày</td>
+                                <td><span class="badge bg-success">Dễ nuôi</span></td>
+                            </tr>
+                            <tr>
+                                <td class="fw-semibold">Cá Neon / Cá đàn thủy sinh</td>
+                                <td>23 – 27°C</td>
+                                <td>6.0 – 7.0</td>
+                                <td>25% / tuần</td>
+                                <td><span class="badge bg-success">Dễ nuôi</span></td>
+                            </tr>
+                            <tr>
+                                <td class="fw-semibold">Cá Đĩa (Discus)</td>
+                                <td>28 – 30°C</td>
+                                <td>6.0 – 6.8</td>
+                                <td>30–50% / 2 ngày</td>
+                                <td><span class="badge bg-warning text-dark">Trung bình</span></td>
+                            </tr>
+                            <tr>
+                                <td class="fw-semibold">Cá Biển (Nemo / Blue Tang)</td>
+                                <td>24 – 26°C</td>
+                                <td>8.1 – 8.4</td>
+                                <td>15% nước mặn/tuần</td>
+                                <td><span class="badge bg-danger">Chuyên sâu</span></td>
+                            </tr>
+                            <tr>
+                                <td class="fw-semibold">Cây Thủy Sinh (Trân châu, Ráy)</td>
+                                <td>22 – 26°C</td>
+                                <td>6.2 – 6.8</td>
+                                <td>30% / tuần</td>
+                                <td><span class="badge bg-info text-dark">Cần đèn & lọc</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- QUY TRÌNH THẢ CÁ MỚI -->
+    <div class="col-lg-5">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-check2-circle text-success me-2"></i>2. Quy trình 4 bước thả cá không bị sốc</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex gap-3 mb-3">
+                    <span class="badge bg-primary rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 32px; height: 32px;">1</span>
+                    <div>
+                        <h6 class="fw-bold mb-1">Tắt đèn & Ngâm túi (15 - 20 phút)</h6>
+                        <small class="text-muted">Ngâm nguyên túi cá chưa mở lên mặt bể để nhiệt độ trong túi cân bằng với nước bể.</small>
+                    </div>
+                </div>
+                <div class="d-flex gap-3 mb-3">
+                    <span class="badge bg-primary rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 32px; height: 32px;">2</span>
+                    <div>
+                        <h6 class="fw-bold mb-1">Châm nước làm quen pH (15 phút)</h6>
+                        <small class="text-muted">Mở túi, cứ 5 phút múc 1 cốc nhỏ nước trong bể cho vào túi (lặp lại 3 lần).</small>
+                    </div>
+                </div>
+                <div class="d-flex gap-3 mb-3">
+                    <span class="badge bg-primary rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 32px; height: 32px;">3</span>
+                    <div>
+                        <h6 class="fw-bold mb-1">Vớt cá thả vào bể</h6>
+                        <small class="text-muted">Dùng vợt nhẹ nhàng vớt cá cho vào bể, <strong>tuyệt đối không đổ nước trong túi</strong> vào bể chính.</small>
+                    </div>
+                </div>
+                <div class="d-flex gap-3">
+                    <span class="badge bg-primary rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 32px; height: 32px;">4</span>
+                    <div>
+                        <h6 class="fw-bold mb-1">Không cho ăn ngay trong 12 giờ đầu</h6>
+                        <small class="text-muted">Để cá ổn định tâm lý và hệ tiêu hóa, bắt đầu cho ăn lượng nhỏ vào ngày hôm sau.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- GỢI Ý COMBO BỂ CÁ -->
+<div class="card border-0 shadow-sm">
+    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 fw-bold"><i class="bi bi-sliders text-warning me-2"></i>3. Gợi ý cấu hình thiết bị theo kích thước bể</h5>
+        <a asp-controller="Product" asp-action="Index" class="btn btn-primary btn-sm">
+            <i class="bi bi-cart3 me-1"></i>Chọn mua thiết bị
+        </a>
+    </div>
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="p-3 border rounded-3 h-100 bg-light">
+                    <h6 class="fw-bold text-primary">Bể Nano Để Bàn (30x20x25cm ~ 15L)</h6>
+                    <ul class="small text-muted mb-0 ps-3">
+                        <li><strong>Lọc:</strong> Lọc thác 250–300L/h hoặc lọc bio</li>
+                        <li><strong>Đèn:</strong> Đèn kẹp LED 8W–12W (bật 6h/ngày)</li>
+                        <li><strong>Sinh vật:</strong> 1 Cá Betta hoặc 6–8 Cá Neon/Guppy</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-3 border rounded-3 h-100 bg-light">
+                    <h6 class="fw-bold text-success">Bể Thủy Sinh Tiêu Chuẩn (60x30x36cm ~ 65L)</h6>
+                    <ul class="small text-muted mb-0 ps-3">
+                        <li><strong>Lọc:</strong> Lọc thùng Sunsun HW-603B (600L/h)</li>
+                        <li><strong>Đèn:</strong> Đèn LED WRGB 60cm (bật 7–8h/ngày)</li>
+                        <li><strong>Bố cục:</strong> Gỗ lũa Redmoor, Ráy Nana, Trân châu</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-3 border rounded-3 h-100 bg-light">
+                    <h6 class="fw-bold text-info">Bể Lớn Phòng Khách (90–120cm ~ 180L+)</h6>
+                    <ul class="small text-muted mb-0 ps-3">
+                        <li><strong>Lọc:</strong> Lọc thùng công suất 1200–2000L/h + sưởi</li>
+                        <li><strong>Đèn:</strong> 2 đèn WRGB hoặc đèn treo công suất cao</li>
+                        <li><strong>Sinh vật:</strong> Đàn Cá Đĩa (Discus) hoặc bể cá biển</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

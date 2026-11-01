@@ -1,0 +1,87 @@
+@model List<AquariumStore.Models.Product>
+@{
+    ViewData["Title"] = "Quản lý sản phẩm";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="mb-0"><i class="bi bi-box-seam me-2"></i>Quản lý sản phẩm</h3>
+    <a href="/Admin/ProductManagement/Create" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-1"></i>Thêm sản phẩm
+    </a>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th style="width: 50px;">ID</th>
+                        <th style="width: 70px;">Ảnh</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Danh mục</th>
+                        <th>Giá bán</th>
+                        <th>Tồn kho</th>
+                        <th>Trạng thái</th>
+                        <th style="width: 150px;">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var p in Model)
+                    {
+                        <tr>
+                            <td>@p.ProductId</td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(p.ImageUrl))
+                                {
+                                    <img src="@p.ImageUrl" alt="" class="rounded" style="width: 50px; height: 50px; object-fit: cover;" />
+                                }
+                                else
+                                {
+                                    <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                        <i class="bi bi-image text-muted"></i>
+                                    </div>
+                                }
+                            </td>
+                            <td class="fw-semibold">@p.ProductName</td>
+                            <td><span class="badge bg-info">@p.Category.CategoryName</span></td>
+                            <td class="text-danger fw-bold">@p.Price.ToString("N0") ₫</td>
+                            <td>
+                                @if (p.StockQuantity <= 5)
+                                {
+                                    <span class="badge bg-danger">@p.StockQuantity</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success">@p.StockQuantity</span>
+                                }
+                            </td>
+                            <td>
+                                @if (p.IsActive)
+                                {
+                                    <span class="badge bg-success">Đang bán</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Ngừng bán</span>
+                                }
+                            </td>
+                            <td>
+                                <a href="/Admin/ProductManagement/Edit/@p.ProductId" class="btn btn-sm btn-outline-warning" title="Sửa">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form action="/Admin/ProductManagement/ToggleActive/@p.ProductId" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-outline-secondary" title="@(p.IsActive ? "Ngừng bán" : "Mở bán")">
+                                        <i class="bi bi-@(p.IsActive ? "pause" : "play")"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,435 @@
+@model List<AquariumStore.Models.Product>
+@{
+    // Thiết lập tiêu đề trang hiển thị trên tab trình duyệt
+    ViewData["Title"] = "Landing Page - Thế Giới Tép Cảnh & Cần Câu Giải Trí";
+    // Lấy danh sách sản phẩm Tép cảnh & Cầu rêu từ ViewBag
+    var shrimpProducts = ViewBag.ShrimpProducts as List<AquariumStore.Models.Product> ?? new List<AquariumStore.Models.Product>();
+    // Lấy danh sách sản phẩm Cần câu & Dụng cụ từ ViewBag
+    var rodProducts = ViewBag.RodProducts as List<AquariumStore.Models.Product> ?? new List<AquariumStore.Models.Product>();
+    // Lấy từ điển các sản phẩm bán chạy nhất (ProductId -> Số lượng đã bán)
+    var bestSellers = ViewBag.BestSellers as Dictionary<int, int> ?? new Dictionary<int, int>();
+}
+
+<!-- =========================================================
+     1. HERO LANDING BANNER CÓ HIỆU ỨNG BONG BÓNG NƯỚC & SÓNG ĐẠI DƯƠNG
+     ========================================================= -->
+<section class="aquatic-landing-hero position-relative rounded-4 overflow-hidden shadow-lg mb-5 text-white">
+    <!-- Lớp hiệu ứng bong bóng nước nổi tự động bằng CSS -->
+    <div class="bubble-container" aria-hidden="true">
+        <span class="water-bubble b1"></span>
+        <span class="water-bubble b2"></span>
+        <span class="water-bubble b3"></span>
+        <span class="water-bubble b4"></span>
+        <span class="water-bubble b5"></span>
+        <span class="water-bubble b6"></span>
+        <span class="water-bubble b7"></span>
+        <span class="water-bubble b8"></span>
+    </div>
+
+    <div class="position-relative p-4 p-md-5" style="z-index: 2;">
+        <div class="row align-items-center g-4 py-2">
+            <div class="col-lg-7">
+                <div class="d-inline-flex align-items-center gap-2 px-3 py-2 rounded-pill bg-warning text-dark fw-bold small mb-3 shadow-sm">
+                    <i class="bi bi-stars"></i> CHUYÊN TRANG ĐẶC BIỆT • TÉP CẢNH, CẦU RÊU &amp; CẦN CÂU 360°
+                </div>
+                <h1 class="display-5 fw-bold mb-3 landing-glow-title">
+                    Thế Giới Tép Cảnh Thuần Chủng &amp; Cần Câu Tôm Tép Siêu Nhẹ
+                </h1>
+                <p class="lead opacity-90 mb-4">
+                    Tuyển chọn các dòng <strong>Tép Màu Neocaridina</strong> (Red Cherry, Blue Dream), <strong>Tép Ong Caridina Cao Cấp</strong> (Red Bee PRL, Galaxy Pinto), <strong>Cầu Rêu Marimo Nhật Bản</strong> cùng bộ sưu tập <strong>Cần Câu Tôm Tép &amp; Cần Lure Carbon</strong> có tính năng <strong>bấm vào ảnh xoay 360° soi chi tiết</strong>.
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="#section-shrimp" class="btn btn-warning btn-lg px-4 fw-bold text-dark shadow">
+                        <i class="bi bi-droplet-half me-2"></i>Khám phá Tép Cảnh &amp; Cầu Rêu
+                    </a>
+                    <a href="#section-rods" class="btn btn-light btn-lg px-4 fw-semibold text-primary shadow-sm">
+                        <i class="bi bi-compass me-2"></i>Xem Cần Câu Xoay 360°
+                    </a>
+                    <button type="button" class="btn btn-outline-light btn-lg px-4" onclick="window.askAquaBot && window.askAquaBot('Tư vấn cách nuôi tép cảnh và chọn cần câu tôm tép')">
+                        <i class="bi bi-robot me-2"></i>Hỏi Chuyên Gia AI
+                    </button>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="row g-3">
+                    <div class="col-6">
+                        <div class="glass-stat-card p-3 rounded-4 text-center h-100">
+                            <i class="bi bi-gem text-warning fs-1"></i>
+                            <h3 class="fw-bold mb-0 mt-1">100%</h3>
+                            <small class="opacity-85">Tép thuần chủng khỏe mạnh</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="glass-stat-card p-3 rounded-4 text-center h-100">
+                            <i class="bi bi-shield-fill-check text-info fs-1"></i>
+                            <h3 class="fw-bold mb-0 mt-1">48 Giờ</h3>
+                            <small class="opacity-85">Bảo hành tép sống 1 đổi 1</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="glass-stat-card p-3 rounded-4 text-center h-100">
+                            <i class="bi bi-arrow-repeat text-success fs-1"></i>
+                            <h3 class="fw-bold mb-0 mt-1">360° 3D</h3>
+                            <small class="opacity-85">Bấm vào ảnh để xoay 360 độ</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="glass-stat-card p-3 rounded-4 text-center h-100">
+                            <i class="bi bi-fire text-danger fs-1"></i>
+                            <h3 class="fw-bold mb-0 mt-1">HOT Deal</h3>
+                            <small class="opacity-85">Hiệu ứng lửa cháy cho Top Bán Chạy</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Đường sóng nước chuyển động dưới chân Hero Banner -->
+    <div class="ocean-wave-divider" aria-hidden="true">
+        <svg viewBox="0 0 1440 70" preserveAspectRatio="none" class="w-100" style="height: 42px; display: block;">
+            <path fill="rgba(255,255,255,0.22)" d="M0,32L60,37.3C120,43,240,53,360,48C480,43,600,21,720,16C840,11,960,21,1080,32C1200,43,1320,53,1380,58.7L1440,64L1440,70L0,70Z"></path>
+            <path fill="#f4f7fb" d="M0,48L80,42.7C160,37,320,27,480,29.3C640,32,800,48,960,53.3C1120,59,1280,53,1360,50.7L1440,48L1440,70L0,70Z"></path>
+        </svg>
+    </div>
+</section>
+
+<!-- =========================================================
+     2. KHU VỰC CẦN CÂU TÔM TÉP, CẦN CÂU LURE CARBON & DỤNG CỤ (BẤM ẢNH XOAY 360 ĐỘ)
+     ========================================================= -->
+<section id="section-rods" class="mb-5 reveal-on-scroll">
+    <div class="p-4 p-md-5 rounded-4 shadow-sm" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #0f766e 100%); color: #fff;">
+        <div class="d-flex flex-wrap justify-content-between align-items-end mb-4">
+            <div>
+                <span class="badge bg-warning text-dark fw-bold px-3 py-1 rounded-pill mb-2">
+                    <i class="bi bi-arrow-repeat me-1"></i>HỖ TRỢ BẤM VÀO ẢNH ĐỂ QUAY 360 ĐỘ &amp; SOI CHI TIẾT
+                </span>
+                <h2 class="fw-bold mb-1">Cần Câu Tôm Tép Carbon, Cần Lure UL &amp; Vợt Tép 3D Inox</h2>
+                <p class="opacity-85 mb-0">Bấm trực tiếp vào hình ảnh từng cây cần câu bên dưới để mở phòng xoay 360° 3D và soi cận cảnh cán cần, đọt Carbon, khoen sứ</p>
+            </div>
+            <a asp-controller="Product" asp-action="Index" asp-route-search="Cần Câu" class="btn btn-warning fw-semibold text-dark mt-2 mt-md-0">
+                Xem bộ sưu tập Cần Câu <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+        </div>
+
+        <div class="row g-4">
+            @foreach (var rod in rodProducts)
+            {
+                var isHotRod = bestSellers.TryGetValue(rod.ProductId, out int soldRodCount);
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow product-card text-dark @(isHotRod ? "hot-fire-card" : "")">
+                        <div class="position-relative cursor-pointer product-img-stage" style="height: 235px; overflow: hidden;"
+                             onclick="window.open360Viewer('@rod.ImageUrl', '@Html.Raw(rod.ProductName.Replace("'", "\\'"))', '@Html.Raw(rod.Category.CategoryName.Replace("'", "\\'"))', '@rod.Price.ToString("N0") ₫', '/Product/Details/@rod.ProductId')"
+                             title="Bấm vào ảnh để xoay 360 độ xem chi tiết cần câu">
+                            <img src="@rod.ImageUrl" alt="@rod.ProductName" class="w-100 h-100 product-img" style="object-fit: contain; padding: 8px;" />
+
+                            @if (isHotRod)
+                            {
+                                <div class="position-absolute top-0 start-0 m-2 z-2">
+                                    <span class="hot-fire-badge">
+                                        <span class="fire-icon-anim">🔥</span> HOT BÁN CHẠY • Đã bán @soldRodCount+
+                                    </span>
+                                </div>
+                                <div class="fire-flames-bar" aria-hidden="true"></div>
+                            }
+                            else
+                            {
+                                <span class="position-absolute top-0 start-0 m-2 badge bg-primary shadow-sm">Carbon / Inox 304</span>
+                            }
+
+                            <span class="position-absolute top-0 end-0 m-2 badge bg-success shadow-sm z-2">Kho: @rod.StockQuantity</span>
+
+                            <!-- Nút nhắc bấm xoay 360 độ ngay trên ảnh -->
+                            <div class="v360-trigger-pill">
+                                <i class="bi bi-arrow-repeat me-1"></i>Bấm xoay 360° &amp; Soi chi tiết
+                            </div>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="fw-bold mb-2">
+                                <a asp-controller="Product" asp-action="Details" asp-route-id="@rod.ProductId" class="text-dark text-decoration-none">
+                                    @rod.ProductName
+                                </a>
+                            </h5>
+                            <p class="text-muted small mb-3 flex-grow-1">@rod.Description</p>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="text-danger fw-bold fs-4">@rod.Price.ToString("N0") ₫</span>
+                                <button type="button" class="btn btn-sm btn-warning fw-bold text-dark shadow-sm"
+                                        onclick="window.open360Viewer('@rod.ImageUrl', '@Html.Raw(rod.ProductName.Replace("'", "\\'"))', '@Html.Raw(rod.Category.CategoryName.Replace("'", "\\'"))', '@rod.Price.ToString("N0") ₫', '/Product/Details/@rod.ProductId')">
+                                    <i class="bi bi-arrow-repeat me-1"></i>Quay 360°
+                                </button>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <a asp-controller="Product" asp-action="Details" asp-route-id="@rod.ProductId" class="btn btn-outline-primary flex-grow-1">
+                                    <i class="bi bi-eye me-1"></i>Chi tiết
+                                </a>
+                                <form asp-controller="Cart" asp-action="Add" method="post" class="flex-grow-1">
+                                    <input type="hidden" name="productId" value="@rod.ProductId" />
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        <i class="bi bi-cart-plus me-1"></i>Mua ngay
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<!-- =========================================================
+     3. KHU VỰC TÉP CẢNH THUẦN CHỦNG & CẦU RÊU MARIMO NHẬT BẢN
+     ========================================================= -->
+<section id="section-shrimp" class="mb-5 reveal-on-scroll">
+    <div class="d-flex flex-wrap justify-content-between align-items-end mb-4">
+        <div>
+            <span class="badge bg-danger bg-opacity-10 text-danger border border-danger-subtle px-3 py-1 rounded-pill mb-2">
+                <i class="bi bi-fire me-1"></i>BỘ SƯU TẬP TÉP CẢNH &amp; CẦU RÊU THỦY SINH
+            </span>
+            <h2 class="fw-bold mb-1">Tép Màu Neocaridina, Tép Ong Caridina &amp; Cầu Rêu Marimo</h2>
+            <p class="text-muted mb-0">Các sản phẩm bán chạy nhất sẽ tự động rực cháy hiệu ứng HOT Lửa Đỏ Cam nổi bật</p>
+        </div>
+        <a asp-controller="Product" asp-action="Index" asp-route-search="Tép" class="btn btn-outline-primary mt-2 mt-md-0">
+            Xem tất cả dòng tép <i class="bi bi-arrow-right ms-1"></i>
+        </a>
+    </div>
+
+    <div class="row g-4">
+        @foreach (var item in shrimpProducts)
+        {
+            var isHotShrimp = bestSellers.TryGetValue(item.ProductId, out int soldShrimpCount);
+            <div class="col-sm-6 col-lg-4 col-xl-3">
+                <div class="card h-100 border-0 shadow-sm product-card shimmer-card @(isHotShrimp ? "hot-fire-card" : "")">
+                    <div class="position-relative cursor-pointer product-img-stage" style="height: 215px; overflow: hidden;"
+                         onclick="window.open360Viewer('@item.ImageUrl', '@Html.Raw(item.ProductName.Replace("'", "\\'"))', '@Html.Raw(item.Category.CategoryName.Replace("'", "\\'"))', '@item.Price.ToString("N0") ₫', '/Product/Details/@item.ProductId')">
+                        <img src="@item.ImageUrl" alt="@item.ProductName" class="w-100 h-100 product-img" style="object-fit: cover;" />
+                        <div class="position-absolute top-0 start-0 m-2 z-2">
+                            @if (isHotShrimp)
+                            {
+                                <span class="hot-fire-badge">
+                                    <span class="fire-icon-anim">🔥</span> BÁN CHẠY • @soldShrimpCount+
+                                </span>
+                            }
+                            else if (item.Price >= 100000)
+                            {
+                                <span class="badge bg-warning text-dark fw-bold shadow-sm"><i class="bi bi-award-fill me-1"></i>Caridina Cao Cấp</span>
+                            }
+                            else if (item.ProductName.Contains("Cầu Rêu", StringComparison.OrdinalIgnoreCase))
+                            {
+                                <span class="badge bg-success shadow-sm"><i class="bi bi-flower1 me-1"></i>Ổ Vi Sinh Tự Nhiên</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-info text-dark fw-semibold shadow-sm"><i class="bi bi-heart-fill text-danger me-1"></i>Dễ Nuôi</span>
+                            }
+                        </div>
+                        <div class="position-absolute top-0 end-0 m-2 z-2">
+                            <span class="badge bg-dark bg-opacity-75">Kho: @item.StockQuantity</span>
+                        </div>
+                        @if (isHotShrimp)
+                        {
+                            <div class="fire-flames-bar" aria-hidden="true"></div>
+                        }
+                        <div class="v360-trigger-pill">
+                            <i class="bi bi-arrow-repeat me-1"></i>Xem 360°
+                        </div>
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <h6 class="fw-bold mb-1">
+                            <a asp-controller="Product" asp-action="Details" asp-route-id="@item.ProductId" class="text-dark text-decoration-none">
+                                @item.ProductName
+                            </a>
+                        </h6>
+                        <p class="text-muted small text-truncate-2 mb-3">@item.Description</p>
+                        <div class="d-flex justify-content-between align-items-center mt-auto mb-3">
+                            <span class="text-danger fw-bold fs-5">@item.Price.ToString("N0") ₫</span>
+                            <button type="button" class="btn btn-sm btn-light text-primary border" title="Hỏi AI cách nuôi"
+                                    onclick="window.askAquaBot && window.askAquaBot('Cách nuôi và thông số nước cho @item.ProductName')">
+                                <i class="bi bi-robot"></i> Tư vấn
+                            </button>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <a asp-controller="Product" asp-action="Details" asp-route-id="@item.ProductId" class="btn btn-outline-primary btn-sm flex-grow-1">
+                                <i class="bi bi-eye"></i> Chi tiết
+                            </a>
+                            <form asp-controller="Cart" asp-action="Add" method="post" class="flex-grow-1">
+                                <input type="hidden" name="productId" value="@item.ProductId" />
+                                <button type="submit" class="btn btn-primary btn-sm w-100" @(item.StockQuantity <= 0 ? "disabled" : "")>
+                                    <i class="bi bi-cart-plus"></i> Thêm giỏ
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</section>
+
+<!-- =========================================================
+     4. BẢNG THÔNG SỐ NƯỚC CHUẨN CHO NGƯỜI CHƠI TÉP CẢNH
+     ========================================================= -->
+<section class="mb-5 reveal-on-scroll">
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="card-header text-white p-4" style="background: linear-gradient(135deg, #0f172a 0%, #0369a1 100%);">
+            <div class="d-flex flex-wrap justify-content-between align-items-center">
+                <div>
+                    <h4 class="fw-bold mb-1"><i class="bi bi-sliders2-vertical text-warning me-2"></i>Bảng Chuẩn Thông Số Nước Nuôi Tép Cảnh</h4>
+                    <small class="opacity-85">Tra cứu nhanh độ pH, TDS, GH và nhiệt độ lý tưởng trước khi thả tép vào bể</small>
+                </div>
+                <span class="badge bg-warning text-dark px-3 py-2 mt-2 mt-md-0">Chuẩn Trại Tép Quốc Tế</span>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">Dòng Tép / Sinh Vật</th>
+                            <th>Nhiệt Độ (°C)</th>
+                            <th>Độ pH</th>
+                            <th>Chỉ Số TDS (ppm)</th>
+                            <th>Độ Cứng GH</th>
+                            <th>Nền &amp; Thiết Bị Khuyên Dùng</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="ps-4 fw-bold text-primary">🦐 Tép Màu Neocaridina (Red Cherry, Blue Dream)</td>
+                            <td><span class="badge bg-success-subtle text-success">22 – 28°C (Không cần Chiller)</span></td>
+                            <td>6.5 – 7.5</td>
+                            <td>120 – 250 ppm</td>
+                            <td>6 – 10 dGH</td>
+                            <td>Sỏi suối / Phân nền + Lọc vi sinh + Cầu rêu Marimo</td>
+                        </tr>
+                        <tr>
+                            <td class="ps-4 fw-bold text-danger">👑 Tép Ong Đỏ Red Bee PRL (Grade SS)</td>
+                            <td><span class="badge bg-info-subtle text-info">22 – 25°C (Phòng máy lạnh/Quạt)</span></td>
+                            <td>5.8 – 6.4</td>
+                            <td>90 – 140 ppm</td>
+                            <td>4 – 6 dGH</td>
+                            <td>Nền ADA Amazonia / Benibachi + Nước RO pha khoáng GH+</td>
+                        </tr>
+                        <tr>
+                            <td class="ps-4 fw-bold" style="color: #7e22ce;">🌌 Tép Galaxy Pinto Black &amp; Red</td>
+                            <td><span class="badge bg-info-subtle text-info">21 – 24°C (Ổn định nhiệt)</span></td>
+                            <td>5.5 – 6.2</td>
+                            <td>80 – 120 ppm</td>
+                            <td>4 – 5 dGH</td>
+                            <td>Bể 45–60cm + Lọc thùng Sunsun HW-603B + Đèn WRGB</td>
+                        </tr>
+                        <tr>
+                            <td class="ps-4 fw-bold text-success">🟢 Cầu Rêu Marimo Nhật Bản</td>
+                            <td><span class="badge bg-success-subtle text-success">15 – 28°C (Cực khỏe)</span></td>
+                            <td>6.0 – 8.0</td>
+                            <td>50 – 300 ppm</td>
+                            <td>Mọi mức GH</td>
+                            <td>Ánh sáng nhẹ – vừa, bóp nhẹ dưới vòi nước mỗi 2 tuần</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- =========================================================
+     5. CÔNG CỤ TƯƠNG TÁC: BỘ CHỌN NHANH COMBO BỂ TÉP & CẦN CÂU THEO NHU CẦU
+     ========================================================= -->
+<section class="mb-5 reveal-on-scroll">
+    <div class="text-center mb-4">
+        <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-1 rounded-pill mb-2">CẤU HÌNH THÔNG MINH</span>
+        <h3 class="fw-bold">Chọn Nhanh Combo Theo Phong Cách Chơi Của Bạn</h3>
+        <p class="text-muted">Bấm vào từng cấu hình bên dưới để xem gợi ý phối ghép chuẩn kỹ thuật từ chuyên gia</p>
+    </div>
+
+    <div class="d-flex justify-content-center flex-wrap gap-2 mb-4" id="combo-tabs">
+        <button type="button" class="btn btn-primary px-4 py-2 combo-tab-btn active" data-combo="starter">
+            <i class="bi bi-stars me-1"></i>1. Combo Người Mới Nuôi Tép Màu (~200k)
+        </button>
+        <button type="button" class="btn btn-outline-primary px-4 py-2 combo-tab-btn" data-combo="pro">
+            <i class="bi bi-gem me-1"></i>2. Combo Bể Tép Ong PRL Chuyên Nghiệp
+        </button>
+        <button type="button" class="btn btn-outline-primary px-4 py-2 combo-tab-btn" data-combo="fishing">
+            <i class="bi bi-compass me-1"></i>3. Combo Cần Câu Tôm Tép &amp; Lure Cuối Tuần
+        </button>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+        <div class="combo-panel" id="combo-starter">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-7">
+                    <span class="badge bg-success mb-2">Dễ nuôi 99% thành công • Không cần bình CO2</span>
+                    <h4 class="fw-bold text-primary">Combo Sinh Thái Tép Đỏ Red Cherry + Cầu Rêu Marimo + Ráy Nana</h4>
+                    <p class="text-muted">
+                        Dành cho bàn làm việc hoặc góc học tập: Cầu rêu Marimo Nhật Bản và Ráy Nana gắn lũa tạo hệ vi sinh tự nhiên giúp đàn Tép Đỏ Red Cherry hoặc Blue Dream lột vỏ khỏe mạnh và đẻ trứng liên tục.
+                    </p>
+                    <ul class="list-unstyled mb-3">
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i><strong>10x Tép Đỏ Red Cherry:</strong> 180.000 ₫ (Tặng kèm 1 quả Cầu rêu khi mua combo)</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i><strong>1x Cầu Rêu Marimo Nhật Bản:</strong> 45.000 ₫ (Ổ vi sinh tự nhiên cho tép con)</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i><strong>1x Vợt Bắt Tép 3D Cán Rút Inox:</strong> 35.000 ₫ (An toàn khi vớt tép)</li>
+                    </ul>
+                    <a asp-controller="Product" asp-action="Index" asp-route-search="Tép" class="btn btn-primary px-4">
+                        <i class="bi bi-bag-check me-2"></i>Chọn mua các món trong Combo này
+                    </a>
+                </div>
+                <div class="col-lg-5 text-center">
+                    <div class="product-img-stage rounded-4 p-3 shadow-sm">
+                        <img src="/images/products/9334c666-78c8-4f0f-98a2-67a3a8f45865.png" alt="Combo Tép Màu" class="img-fluid rounded-3 combo-preview-img" style="max-height: 230px; object-fit: contain;" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="combo-panel d-none" id="combo-pro">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-7">
+                    <span class="badge bg-danger mb-2">Đẳng cấp Caridina • Màu sắc vỏ dày chuẩn triển lãm</span>
+                    <h4 class="fw-bold text-danger">Combo Bể 60cm Tép Ong Red Bee PRL &amp; Galaxy Pinto</h4>
+                    <p class="text-muted">
+                        Kết hợp Bể kính siêu trong 60cm, Máy lọc thùng Sunsun HW-603B giữ nước trong vắt và Đèn LED WRGB Chihiros giúp sắc trắng sứ – đỏ tươi của Tép Ong PRL và ánh kim Galaxy Pinto nổi bật cực đại.
+                    </p>
+                    <ul class="list-unstyled mb-3">
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-danger me-2"></i><strong>Bể cá kính 60cm + Lọc thùng Sunsun HW-603B:</strong> 830.000 ₫</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-danger me-2"></i><strong>Đèn LED Thủy Sinh WRGB Chihiros 60cm:</strong> 890.000 ₫</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-danger me-2"></i><strong>Đàn Tép Ong Đỏ Red Bee PRL / Galaxy Pinto:</strong> Từ 120.000 ₫/con</li>
+                    </ul>
+                    <a asp-controller="Product" asp-action="Index" asp-route-search="PRL" class="btn btn-danger px-4">
+                        <i class="bi bi-gem me-2"></i>Khám phá dòng Tép Ong Cao Cấp
+                    </a>
+                </div>
+                <div class="col-lg-5 text-center">
+                    <div class="product-img-stage rounded-4 p-3 shadow-sm">
+                        <img src="/images/products/ad4606ff-f34e-4a96-8845-08137cb84942.jpg" alt="Combo Tép Ong Cao Cấp" class="img-fluid rounded-3 combo-preview-img" style="max-height: 230px; object-fit: contain;" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="combo-panel d-none" id="combo-fishing">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-7">
+                    <span class="badge bg-info text-dark mb-2">Sợi Carbon Xoắn X • Siêu Nhẹ &amp; Độ Nhạy Đọt Cực Cao</span>
+                    <h4 class="fw-bold text-dark">Combo Cần Câu Tôm Tép Mini 1.5m &amp; Cần Câu Lure UL 1.8m</h4>
+                    <p class="text-muted">
+                        Bộ đôi hoàn hảo cho cả hồ câu tôm giải trí lẫn những chuyến dã ngoại câu suối cuối tuần. Thiết kế thu gọn thông minh, đọt Carbon truyền rung động tức thì ngay khi tôm tép chạm mồi.
+                    </p>
+                    <ul class="list-unstyled mb-3">
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-primary me-2"></i><strong>Cần Câu Tôm Tép Mini Carbon 1.5m (38g):</strong> 195.000 ₫</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-primary me-2"></i><strong>Cần Câu Lure Carbon UL 2 Khúc 1.8m:</strong> 460.000 ₫</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-primary me-2"></i><strong>Vợt Bắt Tép 3D Cán Rút Inox 304:</strong> 35.000 ₫</li>
+                    </ul>
+                    <a asp-controller="Product" asp-action="Index" asp-route-search="Cần Câu" class="btn btn-dark px-4">
+                        <i class="bi bi-compass me-2"></i>Xem chi tiết Cần Câu Carbon
+                    </a>
+                </div>
+                <div class="col-lg-5 text-center">
+                    <div class="product-img-stage rounded-4 p-3 shadow-sm">
+                        <img src="/images/products/342df03d-388b-422a-960b-7a9460c05b3a.png" alt="Combo Cần Câu Carbon" class="img-fluid rounded-3 combo-preview-img" style="max-height: 230px; object-fit: contain;" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

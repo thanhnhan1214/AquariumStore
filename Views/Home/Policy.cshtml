@@ -1,0 +1,206 @@
+@{
+    string currentTopic = (ViewBag.CurrentTopic as string) ?? "huong-dan-mua-hang";
+
+    var guides = new List<(string Slug, string Title)>
+    {
+        ("huong-dan-mua-hang", "Hướng dẫn mua hàng"),
+        ("huong-dan-thanh-toan", "Hướng dẫn thanh toán"),
+        ("huong-dan-giao-nhan", "Hướng dẫn giao nhận"),
+        ("dieu-khoan-dich-vu", "Điều khoản dịch vụ"),
+        ("freeship-shopee", "Hướng dẫn mua hàng miễn phí vận chuyển trên Shopee")
+    };
+
+    var policies = new List<(string Slug, string Title)>
+    {
+        ("quy-dinh-chung", "Chính sách & Quy định chung"),
+        ("bao-mat-thong-tin", "Chính sách bảo mật thông tin"),
+        ("chinh-sach-van-chuyen", "Chính sách vận chuyển, giao nhận"),
+        ("doi-tra-hoan-tien", "Chính sách đổi/trả hàng và hoàn tiền"),
+        ("hinh-thuc-thanh-toan", "Quy định và hình thức thanh toán"),
+        ("chinh-sach-kiem-hang", "Chính sách kiểm hàng")
+    };
+
+    var allItems = guides.Concat(policies).ToList();
+    var activeTitle = allItems.FirstOrDefault(x => x.Slug == currentTopic).Title ?? "Hướng dẫn & Chính sách";
+    ViewData["Title"] = activeTitle;
+}
+
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Trang chủ</a></li>
+        <li class="breadcrumb-item active">@activeTitle</li>
+    </ol>
+</nav>
+
+<div class="row g-4">
+    <!-- SIDEBAR DANH MỤC HƯỚNG DẪN & CHÍNH SÁCH -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-header bg-primary text-white fw-bold">
+                <i class="bi bi-compass me-2"></i>HƯỚNG DẪN
+            </div>
+            <div class="list-group list-group-flush">
+                @foreach (var item in guides)
+                {
+                    <a asp-action="Policy" asp-route-topic="@item.Slug"
+                       class="list-group-item list-group-item-action @(currentTopic == item.Slug ? "active fw-semibold" : "")">
+                        <i class="bi bi-chevron-right small me-1"></i>@item.Title
+                    </a>
+                }
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-dark text-white fw-bold">
+                <i class="bi bi-shield-check me-2"></i>CHÍNH SÁCH
+            </div>
+            <div class="list-group list-group-flush">
+                @foreach (var item in policies)
+                {
+                    <a asp-action="Policy" asp-route-topic="@item.Slug"
+                       class="list-group-item list-group-item-action @(currentTopic == item.Slug ? "active fw-semibold" : "")">
+                        <i class="bi bi-chevron-right small me-1"></i>@item.Title
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- NỘI DUNG CHI TIẾT -->
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white py-3 border-bottom">
+                <h4 class="fw-bold text-primary mb-0">@activeTitle</h4>
+            </div>
+            <div class="card-body p-4">
+                @switch (currentTopic)
+                {
+                    case "huong-dan-mua-hang":
+                        <h6 class="fw-bold">Quy trình đặt mua Cá cảnh, Thủy sinh & Thiết bị tại Aquarium Store:</h6>
+                        <ol class="lh-lg">
+                            <li><strong>Bước 1 — Tìm kiếm sản phẩm:</strong> Duyệt theo danh mục <em>Cá cảnh nước ngọt, Cá biển, Cây thủy sinh, Thiết bị</em> hoặc sử dụng bộ lọc giá và thanh tìm kiếm.</li>
+                            <li><strong>Bước 2 — Thêm vào giỏ hàng:</strong> Kiểm tra số lượng tồn kho thực tế, chọn số lượng cần mua và bấm <strong>Thêm vào giỏ hàng</strong>.</li>
+                            <li><strong>Bước 3 — Đăng nhập & Điền thông tin giao nhận:</strong> Nhập chính xác địa chỉ nhận hàng và số điện thoại người nhận.</li>
+                            <li><strong>Bước 4 — Chọn hình thức thanh toán:</strong> Chọn <strong>COD (Thanh toán khi nhận hàng)</strong> hoặc <strong>Chuyển khoản qua mã QR (VietQR)</strong> và bấm <strong>Xác nhận Đặt hàng</strong>.</li>
+                            <li><strong>Bước 5 — Theo dõi đơn hàng:</strong> Kiểm tra tiến trình xử lý đơn tại mục <strong>Đơn mua</strong> hoặc hỏi trực tiếp trợ lý <strong>AquaBot AI</strong>.</li>
+                        </ol>
+                        break;
+
+                    case "huong-dan-thanh-toan":
+                        <h6 class="fw-bold">Các bước thanh toán nhanh chóng & an toàn:</h6>
+                        <p>Aquarium Store hỗ trợ 2 phương thức thanh toán chính trên website và tại cửa hàng:</p>
+                        <ul class="lh-lg">
+                            <li><strong>1. Thanh toán tiền mặt khi nhận hàng (COD):</strong> Quý khách kiểm tra tình trạng kiện hàng và thanh toán trực tiếp cho nhân viên giao hàng.</li>
+                            <li><strong>2. Chuyển khoản Ngân hàng qua mã VietQR tự động:</strong>
+                                <ul>
+                                    <li>Ngân hàng: <strong>MB BANK (Ngân hàng Quân Đội)</strong></li>
+                                    <li>Số tài khoản: <code>0817687979</code> — Chủ tài khoản: <strong>LE THANH NHAN</strong></li>
+                                    <li>Nội dung chuyển khoản: <code>DH-[Mã đơn hàng]</code> (Hệ thống tự động tạo mã QR khớp số tiền đơn hàng).</li>
+                                </ul>
+                            </li>
+                            <li><strong>3. Thẻ quốc tế tại quầy:</strong> Chấp nhận thanh toán qua thẻ <strong>VISA, MasterCard, JCB</strong> và <strong>PayPal</strong>.</li>
+                        </ul>
+                        break;
+
+                    case "huong-dan-giao-nhan":
+                        <h6 class="fw-bold">Quy chuẩn đóng gói & Giao nhận sinh vật cảnh:</h6>
+                        <ul class="lh-lg">
+                            <li><strong>Đối với cá cảnh & tép cảnh:</strong> Đóng trong túi PE chuyên dụng 3 lớp, bơm <strong>Oxy nguyên chất 100%</strong> (đảm bảo sống khỏe 48–72 giờ) và đặt trong thùng xốp cách nhiệt.</li>
+                            <li><strong>Đối với cây thủy sinh:</strong> Giữ ẩm trong hộp nhựa/túi zip chống dập nát lá.</li>
+                            <li><strong>Đối với bể kính & thiết bị:</strong> Quấn màng chống sốc nhiều lớp, chèn xốp góc bảo vệ an toàn tuyệt đối.</li>
+                            <li><strong>Thời gian giao hàng:</strong> Nội thành TP.HCM từ 2–4 giờ; các tỉnh thành khác từ 24–48 giờ.</li>
+                        </ul>
+                        break;
+
+                    case "dieu-khoan-dich-vu":
+                        <h6 class="fw-bold">Điều khoản sử dụng dịch vụ tại Aquarium Store:</h6>
+                        <p>Khi truy cập và đặt hàng trên hệ thống Aquarium Store, quý khách đồng ý với các quy định sau:</p>
+                        <ul class="lh-lg">
+                            <li>Cung cấp thông tin họ tên, số điện thoại và địa chỉ giao hàng chính xác để đảm bảo sinh vật cảnh được giao đúng thời gian.</li>
+                            <li>Không đặt đơn hàng ảo gây ảnh hưởng đến số lượng tồn kho dự trữ của hệ thống.</li>
+                            <li>Mọi thông tin giá bán và tồn kho trên website đều được niêm yết công khai, minh bạch theo thời gian thực.</li>
+                        </ul>
+                        break;
+
+                    case "freeship-shopee":
+                        <h6 class="fw-bold">Hướng dẫn nhận ưu đãi Miễn phí vận chuyển (Freeship):</h6>
+                        <ul class="lh-lg">
+                            <li><strong>Đặt trực tiếp trên Website Aquarium Store:</strong> Miễn phí vận chuyển 100% cho mọi đơn hàng có tổng giá trị từ <strong>500.000 ₫</strong> trở lên.</li>
+                            <li><strong>Khi đặt phụ kiện/thiết bị qua gian hàng Shopee Mall của shop:</strong>
+                                <ol>
+                                    <li>Lưu mã <em>Freeship Extra</em> tại mục Voucher trước khi thanh toán.</li>
+                                    <li>Chọn sản phẩm thức ăn, đèn LED, máy lọc, gỗ lũa vào giỏ hàng.</li>
+                                    <li>Áp dụng mã miễn phí vận chuyển ở bước Thanh toán để được giảm từ 15.000 ₫ – 70.000 ₫ phí ship.</li>
+                                </ol>
+                            </li>
+                        </ul>
+                        break;
+
+                    case "quy-dinh-chung":
+                        <h6 class="fw-bold">Chính sách & Quy định hoạt động chung:</h6>
+                        <ul class="lh-lg">
+                            <li>Tất cả sinh vật cảnh xuất bán tại Aquarium Store đều đã qua quy trình dưỡng khỏe (Quarantine) tối thiểu 5–7 ngày, không mang mầm bệnh.</li>
+                            <li>Thiết bị điện (máy lọc, đèn LED, máy sưởi) đều là sản phẩm chính hãng, có tem kiểm định chất lượng và phiếu bảo hành.</li>
+                            <li>Đơn hàng ở trạng thái <strong>"Chờ xử lý"</strong> có thể được khách hàng chủ động hủy trực tuyến trên website (hệ thống tự động hoàn kho ngay lập tức).</li>
+                        </ul>
+                        break;
+
+                    case "bao-mat-thong-tin":
+                        <h6 class="fw-bold">Cam kết Bảo mật thông tin khách hàng:</h6>
+                        <ul class="lh-lg">
+                            <li>Mật khẩu tài khoản người dùng được mã hóa một chiều bằng thuật toán <strong>SHA-256</strong>, tuyệt đối không lưu mật khẩu dạng văn bản thuần.</li>
+                            <li>Thông tin cá nhân (Họ tên, Email, Số điện thoại, Địa chỉ) chỉ được sử dụng cho mục đích xác nhận đơn hàng, giao nhận và bảo hành.</li>
+                            <li>Cam kết không chia sẻ, mua bán dữ liệu khách hàng cho bất kỳ bên thứ ba nào ngoài đơn vị vận chuyển thực hiện giao đơn.</li>
+                        </ul>
+                        break;
+
+                    case "chinh-sach-van-chuyen":
+                        <h6 class="fw-bold">Biểu phí & Phạm vi vận chuyển:</h6>
+                        <ul class="lh-lg">
+                            <li><strong>Nội thành TP.HCM:</strong> Giao nhanh trong ngày hoặc hỏa tốc 2h. Miễn phí vận chuyển cho đơn từ 500.000 ₫.</li>
+                            <li><strong>Ngoại thành & Liên tỉnh:</strong> Gửi qua đối tác vận chuyển nhanh hoặc nhà xe chuyên tuyến đối với đơn cá cảnh/bể kính kích thước lớn.</li>
+                            <li>Miễn phí 100% chi phí thùng xốp, túi Oxy và vật liệu chống sốc trên mọi đơn hàng.</li>
+                        </ul>
+                        break;
+
+                    case "doi-tra-hoan-tien":
+                        <h6 class="fw-bold">Chính sách Bảo hành Cá sống 100% & Đổi trả Thiết bị:</h6>
+                        <ul class="lh-lg">
+                            <li><strong>Bảo hành sinh vật sống (DOA — Dead On Arrival):</strong> Hoàn tiền 100% hoặc gửi bù miễn phí nếu cá/cây gặp rủi ro khi mở thùng (quý khách vui lòng quay video lúc mở hộp và gửi qua Hotline/Zalo 0901 234 567 trong vòng 2 giờ kể từ khi nhận hàng).</li>
+                            <li><strong>Đổi trả thiết bị trong 7 ngày:</strong> 1 đổi 1 mới hoàn toàn nếu máy lọc, đèn LED phát sinh lỗi kỹ thuật từ nhà sản xuất.</li>
+                            <li><strong>Thời gian hoàn tiền:</strong> Xử lý hoàn tiền qua tài khoản ngân hàng trong vòng 24 giờ làm việc.</li>
+                        </ul>
+                        break;
+
+                    case "hinh-thuc-thanh-toan":
+                        <h6 class="fw-bold">Quy định và các hình thức thanh toán được chấp nhận:</h6>
+                        <ul class="lh-lg">
+                            <li><strong>Thanh toán COD:</strong> Áp dụng cho toàn bộ đơn thiết bị, phụ kiện, cây thủy sinh và đơn cá cảnh nội thành.</li>
+                            <li><strong>Thanh toán chuyển khoản QR (VietQR 24/7):</strong> Khuyến khích áp dụng để đơn hàng được xác nhận tự động nhanh nhất.</li>
+                            <li><strong>Thẻ thanh toán quốc tế:</strong> Hỗ trợ <strong>VISA, MasterCard, PayPal, JCB</strong> khi mua trực tiếp tại showroom.</li>
+                        </ul>
+                        break;
+
+                    case "chinh-sach-kiem-hang":
+                        <h6 class="fw-bold">Quyền lợi đồng kiểm hàng hóa khi nhận hàng:</h6>
+                        <ul class="lh-lg">
+                            <li>Quý khách được quyền <strong>mở thùng xốp kiểm tra đúng chủng loại cá, cây thủy sinh và số lượng thiết bị</strong> trước khi thanh toán cho nhân viên giao hàng.</li>
+                            <li>Lưu ý đối với túi cá cảnh: Chỉ quan sát tình trạng cá bơi bên trong túi trong suốt, <strong>không mở dây thun buộc túi Oxy</strong> nếu chưa thả ngay vào bể.</li>
+                            <li>Nếu phát hiện sản phẩm bị vỡ hỏng do vận chuyển hoặc sai mẫu mã, quý khách có quyền từ chối nhận hàng và không mất bất kỳ chi phí nào.</li>
+                        </ul>
+                        break;
+                }
+
+                <hr class="my-4" />
+                <div class="d-flex flex-wrap justify-content-between align-items-center bg-light p-3 rounded-3">
+                    <div>
+                        <strong>Cần giải đáp thêm?</strong> Hãy nhấn nút <strong>Tư vấn AI</strong> ở góc phải màn hình hoặc gọi <strong>0901 234 567</strong>.
+                    </div>
+                    <a asp-controller="Product" asp-action="Index" class="btn btn-primary btn-sm mt-2 mt-sm-0">
+                        <i class="bi bi-cart3 me-1"></i>Tiếp tục mua sắm
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

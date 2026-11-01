@@ -1,0 +1,236 @@
+@model AquariumStore.ViewModels.DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="fw-bold mb-0"><i class="bi bi-speedometer2 text-primary me-2"></i>Bảng điều khiển quản trị</h3>
+        <small class="text-muted">Tổng quan hoạt động kinh doanh, tồn kho và đơn hàng thời gian thực</small>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="/Admin/Inventory/Import" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-box-arrow-in-down me-1"></i>Nhập kho
+        </a>
+        <a href="/Admin/ProductManagement/Create" class="btn btn-primary btn-sm">
+            <i class="bi bi-plus-circle me-1"></i>Thêm sản phẩm
+        </a>
+    </div>
+</div>
+
+<!-- STAT CARDS -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm border-start border-4 border-success h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted small mb-1">Tổng doanh thu (Hoàn thành)</p>
+                        <h4 class="fw-bold text-success mb-0">@Model.TotalRevenue.ToString("N0") ₫</h4>
+                    </div>
+                    <i class="bi bi-cash-coin text-success" style="font-size: 2.4rem; opacity: 0.3;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm border-start border-4 border-warning h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted small mb-1">Đơn chờ xử lý / Tổng đơn</p>
+                        <h4 class="fw-bold text-warning mb-0">@Model.NewOrdersCount <small class="text-muted fs-6">/ @Model.TotalOrders</small></h4>
+                    </div>
+                    <i class="bi bi-bag-check text-warning" style="font-size: 2.4rem; opacity: 0.3;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm border-start border-4 border-primary h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted small mb-1">Sản phẩm đang bán</p>
+                        <h4 class="fw-bold text-primary mb-0">@Model.TotalProducts</h4>
+                    </div>
+                    <i class="bi bi-box-seam text-primary" style="font-size: 2.4rem; opacity: 0.3;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm border-start border-4 border-info h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted small mb-1">Khách hàng thành viên</p>
+                        <h4 class="fw-bold text-info mb-0">@Model.TotalCustomers</h4>
+                    </div>
+                    <i class="bi bi-people text-info" style="font-size: 2.4rem; opacity: 0.3;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <!-- BIỂU ĐỒ DOANH THU -->
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white py-3">
+                <h6 class="mb-0 fw-bold"><i class="bi bi-bar-chart-line text-primary me-2"></i>Biểu đồ doanh thu 12 tháng gần nhất</h6>
+            </div>
+            <div class="card-body">
+                <canvas id="revenueChart" height="290"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- BIỂU ĐỒ TỶ LỆ TRẠNG THÁI ĐƠN HÀNG -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white py-3">
+                <h6 class="mb-0 fw-bold"><i class="bi bi-pie-chart text-info me-2"></i>Cơ cấu trạng thái đơn hàng</h6>
+            </div>
+            <div class="card-body d-flex align-items-center justify-content-center">
+                <canvas id="statusChart" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- ĐƠN HÀNG GẦN NHẤT -->
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h6 class="mb-0 fw-bold"><i class="bi bi-clock-history text-primary me-2"></i>Đơn hàng mới nhất</h6>
+                <a href="/Admin/OrderManagement" class="btn btn-sm btn-outline-primary">Xem tất cả</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr><th>Mã ĐH</th><th>Khách hàng</th><th>Ngày đặt</th><th>Tổng tiền</th><th>Trạng thái</th><th></th></tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var o in Model.RecentOrders)
+                            {
+                                var bc = o.Status switch {
+                                    "Chờ xử lý" => "bg-warning text-dark",
+                                    "Đã xác nhận" => "bg-info text-dark",
+                                    "Đang giao" => "bg-primary",
+                                    "Hoàn thành" => "bg-success",
+                                    "Đã hủy" => "bg-danger",
+                                    _ => "bg-secondary"
+                                };
+                                <tr>
+                                    <td class="fw-bold">#@o.OrderId</td>
+                                    <td>@o.User.FullName</td>
+                                    <td>@o.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                    <td class="text-danger fw-semibold">@o.TotalAmount.ToString("N0") ₫</td>
+                                    <td><span class="badge @bc">@o.Status</span></td>
+                                    <td><a href="/Admin/OrderManagement/Details/@o.OrderId" class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i></a></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CẢNH BÁO TỒN KHO THẤP -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-danger text-white py-3 d-flex justify-content-between align-items-center">
+                <h6 class="mb-0 fw-bold"><i class="bi bi-exclamation-triangle me-2"></i>Cảnh báo sắp hết hàng (≤ 5)</h6>
+                <span class="badge bg-light text-danger">@Model.LowStockProducts.Count SP</span>
+            </div>
+            <div class="card-body p-0">
+                @if (Model.LowStockProducts.Any())
+                {
+                    <div class="list-group list-group-flush">
+                        @foreach (var p in Model.LowStockProducts)
+                        {
+                            <div class="list-group-item d-flex justify-content-between align-items-center py-3">
+                                <div>
+                                    <span class="fw-semibold">@p.ProductName</span><br />
+                                    <small class="text-muted">@p.Category.CategoryName — Còn <strong>@p.StockQuantity</strong></small>
+                                </div>
+                                <a href="/Admin/Inventory/Import" class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-plus-lg"></i> Nhập
+                                </a>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="p-4 text-center text-muted">
+                        <i class="bi bi-check-circle text-success fs-2 d-block mb-2"></i>
+                        Tất cả sản phẩm đều đủ tồn kho an toàn
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const ctx = document.getElementById('revenueChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [@Html.Raw(string.Join(",", Model.MonthlyRevenue.Keys.Select(k => $"'{k}'")))],
+                datasets: [{
+                    label: 'Doanh thu (VNĐ)',
+                    data: [@Html.Raw(string.Join(",", Model.MonthlyRevenue.Values))],
+                    backgroundColor: 'rgba(0, 119, 182, 0.72)',
+                    borderColor: 'rgba(0, 119, 182, 1)',
+                    borderWidth: 1,
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return new Intl.NumberFormat('vi-VN').format(value) + ' ₫';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        const statusCtx = document.getElementById('statusChart').getContext('2d');
+        new Chart(statusCtx, {
+            type: 'doughnut',
+            data: {
+                labels: [@Html.Raw(string.Join(",", Model.OrdersByStatus.Keys.Select(k => $"'{k}'")))],
+                datasets: [{
+                    data: [@Html.Raw(string.Join(",", Model.OrdersByStatus.Values))],
+                    backgroundColor: ['#ffc107', '#0dcaf0', '#0d6efd', '#198754', '#dc3545']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+    </script>
+}

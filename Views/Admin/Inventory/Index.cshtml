@@ -1,0 +1,57 @@
+@model List<AquariumStore.Models.InventoryLog>
+@{
+    ViewData["Title"] = "Quản lý kho";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="mb-0"><i class="bi bi-clipboard-data me-2"></i>Lịch sử nhập/xuất kho</h3>
+    <a href="/Admin/Inventory/Import" class="btn btn-primary">
+        <i class="bi bi-box-arrow-in-down me-1"></i>Nhập hàng
+    </a>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Sản phẩm</th>
+                        <th>Người thực hiện</th>
+                        <th>Số lượng</th>
+                        <th>Lý do</th>
+                        <th>Thời gian</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr><td colspan="6" class="text-center text-muted py-4">Chưa có bản ghi nào.</td></tr>
+                    }
+                    @foreach (var log in Model)
+                    {
+                        <tr>
+                            <td>@log.LogId</td>
+                            <td class="fw-semibold">@log.Product.ProductName</td>
+                            <td>@log.User.FullName</td>
+                            <td>
+                                @if (log.QuantityChange > 0)
+                                {
+                                    <span class="badge bg-success">+@log.QuantityChange</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">@log.QuantityChange</span>
+                                }
+                            </td>
+                            <td class="text-muted small">@log.Reason</td>
+                            <td>@log.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

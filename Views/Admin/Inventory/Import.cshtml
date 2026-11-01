@@ -1,0 +1,57 @@
+@model AquariumStore.ViewModels.InventoryImportViewModel
+@{
+    ViewData["Title"] = "Nhập hàng";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h3 class="mb-4"><i class="bi bi-box-arrow-in-down me-2"></i>Phiếu nhập hàng</h3>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <form asp-action="Import" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="ProductId" class="form-label"></label>
+                        <select asp-for="ProductId" asp-items="@(ViewBag.Products as Microsoft.AspNetCore.Mvc.Rendering.SelectList)" class="form-select">
+                            <option value="">-- Chọn sản phẩm --</option>
+                        </select>
+                        <span asp-validation-for="ProductId" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Quantity" class="form-label"></label>
+                        <input asp-for="Quantity" class="form-control" />
+                        <span asp-validation-for="Quantity" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Reason" class="form-label"></label>
+                        <textarea asp-for="Reason" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="Reason" class="text-danger small"></span>
+                    </div>
+
+                    <a href="/Admin/Inventory" class="btn btn-outline-secondary me-2">
+                        <i class="bi bi-arrow-left me-1"></i>Quay lại
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-circle me-1"></i>Xác nhận nhập hàng
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="alert alert-info">
+            <h6><i class="bi bi-info-circle me-1"></i>Hướng dẫn</h6>
+            <ul class="mb-0 small">
+                <li>Chọn sản phẩm cần nhập hàng từ danh sách.</li>
+                <li>Nhập số lượng nhập thêm (phải lớn hơn 0).</li>
+                <li>Ghi rõ lý do nhập hàng (ví dụ: nhập từ nhà cung cấp, hoàn kho, ...).</li>
+                <li>Hệ thống sẽ tự động cập nhật tồn kho và ghi nhận lịch sử.</li>
+            </ul>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,94 @@
+@model AquariumStore.Models.Order
+@{
+    ViewData["Title"] = "Đặt hàng thành công";
+    var qrAmount = (long)Model.TotalAmount;
+    var qrUrl = $"https://img.vietqr.io/image/MB-0817687979-compact2.png?amount={qrAmount}&addInfo=DH-{Model.OrderId}&accountName=LE%20THANH%20NHAN";
+}
+
+<div class="text-center py-4">
+    <i class="bi bi-check-circle-fill text-success" style="font-size: 4.5rem;"></i>
+    <h2 class="mt-2 fw-bold text-success">Đặt hàng thành công!</h2>
+    <p class="text-muted">Cảm ơn bạn đã tin tưởng lựa chọn Aquarium Store. Mã đơn hàng của bạn là <strong>#@Model.OrderId</strong>.</p>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-9 col-lg-7">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-receipt me-2"></i>Phiếu xác nhận đơn hàng #@Model.OrderId</span>
+                <button type="button" onclick="window.print()" class="btn btn-sm btn-light text-success fw-semibold no-print">
+                    <i class="bi bi-printer me-1"></i>In phiếu
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="row g-3 mb-3 small">
+                    <div class="col-sm-6">
+                        <p class="mb-1 text-muted">Ngày đặt hàng:</p>
+                        <p class="fw-semibold mb-2">@Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</p>
+                        <p class="mb-1 text-muted">Phương thức thanh toán:</p>
+                        <p class="fw-semibold mb-0">@Model.PaymentMethod</p>
+                    </div>
+                    <div class="col-sm-6">
+                        <p class="mb-1 text-muted">SĐT người nhận:</p>
+                        <p class="fw-semibold mb-2">@Model.RecipientPhone</p>
+                        <p class="mb-1 text-muted">Địa chỉ nhận hàng:</p>
+                        <p class="fw-semibold mb-0">@Model.ShippingAddress</p>
+                    </div>
+                </div>
+
+                <hr />
+
+                <h6 class="fw-bold mb-2">Chi tiết sản phẩm</h6>
+                <table class="table table-sm table-bordered align-middle">
+                    <thead class="table-light">
+                        <tr><th>Sản phẩm</th><th class="text-center">SL</th><th class="text-end">Đơn giá</th><th class="text-end">Thành tiền</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var d in Model.OrderDetails)
+                        {
+                            <tr>
+                                <td>@d.Product.ProductName</td>
+                                <td class="text-center">@d.Quantity</td>
+                                <td class="text-end">@d.UnitPrice.ToString("N0") ₫</td>
+                                <td class="text-end text-danger fw-semibold">@d.SubTotal.ToString("N0") ₫</td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr class="fw-bold">
+                            <td colspan="3" class="text-end">Tổng cộng:</td>
+                            <td class="text-end text-danger fs-5">@Model.TotalAmount.ToString("N0") ₫</td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+                @if (Model.PaymentMethod == "Chuyển khoản")
+                {
+                    <div class="alert alert-info border-info mt-3 mb-0">
+                        <div class="row align-items-center g-3">
+                            <div class="col-sm-7">
+                                <h6 class="fw-bold"><i class="bi bi-qr-code-scan me-1"></i>Quét mã VietQR để thanh toán</h6>
+                                <p class="mb-1"><strong>Ngân hàng:</strong> MB BANK</p>
+                                <p class="mb-1"><strong>Số TK:</strong> <code class="fs-6 fw-bold">0817687979</code></p>
+                                <p class="mb-1"><strong>Chủ TK:</strong> LE THANH NHAN</p>
+                                <p class="mb-1"><strong>Số tiền:</strong> <strong class="text-danger">@Model.TotalAmount.ToString("N0") ₫</strong></p>
+                                <p class="mb-0"><strong>Nội dung CK:</strong> <code class="fs-6 fw-bold">DH-@Model.OrderId</code></p>
+                            </div>
+                            <div class="col-sm-5 text-center">
+                                <img src="@qrUrl" alt="VietQR DH-@Model.OrderId" class="img-fluid rounded-3 shadow-sm bg-white p-2" style="max-width: 185px;" />
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="card-footer bg-white text-center no-print">
+                <a asp-controller="Order" asp-action="Details" asp-route-id="@Model.OrderId" class="btn btn-outline-primary me-2">
+                    <i class="bi bi-eye me-1"></i>Theo dõi đơn hàng
+                </a>
+                <a asp-controller="Product" asp-action="Index" class="btn btn-primary">
+                    <i class="bi bi-grid me-1"></i>Tiếp tục mua sắm
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

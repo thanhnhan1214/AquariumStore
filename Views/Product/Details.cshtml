@@ -1,0 +1,229 @@
+@model AquariumStore.Models.Product
+@{
+    ViewData["Title"] = Model.ProductName;
+    var relatedProducts = ViewBag.RelatedProducts as List<AquariumStore.Models.Product>;
+    var bestSellers = ViewBag.BestSellers as Dictionary<int, int> ?? new Dictionary<int, int>();
+    bool isHotProduct = bestSellers.TryGetValue(Model.ProductId, out int soldCount);
+    bool isEquipmentOrRod = Model.Category.CategoryName.Contains("Cần câu", StringComparison.OrdinalIgnoreCase)
+                         || Model.Category.CategoryName.Contains("Thiết bị", StringComparison.OrdinalIgnoreCase)
+                         || Model.Category.CategoryName.Contains("Phụ kiện", StringComparison.OrdinalIgnoreCase);
+}
+
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Trang chủ</a></li>
+        <li class="breadcrumb-item"><a asp-controller="Product" asp-action="Index">Sản phẩm</a></li>
+        <li class="breadcrumb-item">
+            <a asp-controller="Product" asp-action="Index" asp-route-categoryId="@Model.CategoryId">@Model.Category.CategoryName</a>
+        </li>
+        <li class="breadcrumb-item active">@Model.ProductName</li>
+    </ol>
+</nav>
+
+<div class="card border-0 shadow-sm p-3 p-md-4 mb-4 @(isHotProduct ? "hot-fire-card" : "")">
+    <div class="row g-4">
+        <!-- HÌNH ẢNH SẢN PHẨM (BẤM VÀO ĐỂ QUAY 360 ĐỘ & SOI CHI TIẾT) -->
+        <div class="col-md-5">
+            <div class="rounded-4 overflow-hidden border product-img-stage d-flex align-items-center justify-content-center position-relative cursor-pointer"
+                 style="height: 390px;"
+                 onclick="window.open360Viewer('@Model.ImageUrl', '@Html.Raw(Model.ProductName.Replace("'", "\\'"))', '@Html.Raw(Model.Category.CategoryName.Replace("'", "\\'"))', '@Model.Price.ToString("N0") ₫', '/Product/Details/@Model.ProductId')"
+                 title="Bấm vào hình ảnh để mở chế độ Xoay 360° & Soi chi tiết sản phẩm">
+                @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                {
+                    <img src="@Model.ImageUrl" alt="@Model.ProductName"
+                         class="w-100 h-100 product-img product-detail-img" style="object-fit: cover;" />
+                }
+                else
+                {
+                    <i class="bi bi-image text-secondary" style="font-size: 5rem;"></i>
+                }
+
+                @if (isHotProduct)
+                {
+                    <div class="position-absolute top-0 start-0 m-3 z-2">
+                        <span class="hot-fire-badge">
+                            <span class="fire-icon-anim">🔥</span> TOP BÁN CHẠY • Đã bán @soldCount+
+                        </span>
+                    </div>
+                    <div class="fire-flames-bar" aria-hidden="true"></div>
+                }
+
+                <div class="v360-trigger-pill">
+                    <i class="bi bi-arrow-repeat me-1"></i>Bấm vào ảnh để Xoay 360° &amp; Xem chi tiết
+                </div>
+            </div>
+
+            <div class="d-grid mt-2">
+                <button type="button" class="btn btn-warning fw-bold text-dark shadow-sm"
+                        onclick="window.open360Viewer('@Model.ImageUrl', '@Html.Raw(Model.ProductName.Replace("'", "\\'"))', '@Html.Raw(Model.Category.CategoryName.Replace("'", "\\'"))', '@Model.Price.ToString("N0") ₫', '/Product/Details/@Model.ProductId')">
+                    <i class="bi bi-arrow-repeat me-2"></i>Mở Phòng Xoay 360° &amp; Soi Chi Tiết Cận Cảnh (Zoom 2.2x)
+                </button>
+            </div>
+        </div>
+
+        <!-- THÔNG TIN SẢN PHẨM -->
+        <div class="col-md-7 d-flex flex-column">
+            <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                <span class="badge bg-info text-dark">@Model.Category.CategoryName</span>
+                <span class="text-muted small">Mã SP: <strong>#SP-@Model.ProductId.ToString("D4")</strong></span>
+                @if (isHotProduct)
+                {
+                    <span class="hot-fire-badge">
+                        <span class="fire-icon-anim">🔥</span> HOT BÁN CHẠY NHẤT (@soldCount+ lượt mua)
+                    </span>
+                }
+            </div>
+
+            <h2 class="fw-bold mb-2">@Model.ProductName</h2>
+
+            <div class="p-3 rounded-3 bg-light my-2 d-flex flex-wrap align-items-center justify-content-between gap-2">
+                <div>
+                    <span class="text-muted small d-block">Giá niêm yết:</span>
+                    <span class="text-danger fw-bold" style="font-size: 2rem;">@Model.Price.ToString("N0") ₫</span>
+                </div>
+                <div>
+                    @if (Model.StockQuantity > 5)
+                    {
+                        <span class="badge bg-success fs-6 px-3 py-2"><i class="bi bi-check-circle me-1"></i>Còn hàng (@Model.StockQuantity sản phẩm)</span>
+                    }
+                    else if (Model.StockQuantity > 0)
+                    {
+                        <span class="badge bg-warning text-dark fs-6 px-3 py-2"><i class="bi bi-exclamation-triangle me-1"></i>Sắp hết (còn @Model.StockQuantity)</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger fs-6 px-3 py-2"><i class="bi bi-x-circle me-1"></i>Tạm hết hàng</span>
+                    }
+                </div>
+            </div>
+
+            <h6 class="fw-bold mt-3 mb-1">Mô tả chi tiết</h6>
+            <p class="text-muted mb-3">@(Model.Description ?? "Chưa có mô tả chi tiết.")</p>
+
+            <!-- CHÍNH SÁCH & BẢO HÀNH NHANH PHÙ HỢP THEO NHÓM HÀNG -->
+            <div class="row g-2 mb-4 small">
+                @if (isEquipmentOrRod)
+                {
+                    <div class="col-sm-6">
+                        <div class="p-2 border rounded-3 bg-white">
+                            <i class="bi bi-shield-check text-success me-1"></i><strong>Bảo hành:</strong> Chính hãng 12 tháng 1 đổi 1
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="p-2 border rounded-3 bg-white">
+                            <i class="bi bi-box-seam text-primary me-1"></i><strong>Đóng gói:</strong> Ống cứng chống sốc 3 lớp an toàn
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-6">
+                        <div class="p-2 border rounded-3 bg-white">
+                            <i class="bi bi-shield-check text-success me-1"></i><strong>Bảo hành:</strong> Cam kết sống khỏe 100% khi nhận
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="p-2 border rounded-3 bg-white">
+                            <i class="bi bi-box-seam text-primary me-1"></i><strong>Đóng gói:</strong> Bơm Oxy chuyên dụng + thùng xốp
+                        </div>
+                    </div>
+                }
+                <div class="col-sm-6">
+                    <div class="p-2 border rounded-3 bg-white">
+                        <i class="bi bi-truck text-info me-1"></i><strong>Giao hàng:</strong> Hỏa tốc nội thành &amp; COD toàn quốc
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="p-2 border rounded-3 bg-white">
+                        <i class="bi bi-headset text-warning me-1"></i><strong>Hỗ trợ:</strong> Tư vấn kỹ thuật chuyên sâu 24/7
+                    </div>
+                </div>
+            </div>
+
+            <!-- FORM THÊM VÀO GIỎ -->
+            <div class="mt-auto">
+                @if (Model.StockQuantity > 0)
+                {
+                    <form asp-controller="Cart" asp-action="Add" method="post" class="d-flex flex-wrap align-items-center gap-3">
+                        <input type="hidden" name="productId" value="@Model.ProductId" />
+                        <div class="input-group" style="width: 150px;">
+                            <button class="btn btn-outline-secondary" type="button" onclick="changeQty(-1)">-</button>
+                            <input type="number" id="qtyInput" name="quantity" value="1" min="1" max="@Model.StockQuantity"
+                                   class="form-control text-center fw-bold" />
+                            <button class="btn btn-outline-secondary" type="button" onclick="changeQty(1)">+</button>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg px-4 shadow-sm">
+                            <i class="bi bi-cart-plus me-2"></i>Thêm vào giỏ hàng
+                        </button>
+                        <button type="button" class="btn btn-outline-info btn-lg"
+                                onclick="window.askAquaBot('Tư vấn chi tiết về @Html.Raw(Model.ProductName.Replace("'", "\\'"))')">
+                            <i class="bi bi-robot me-1"></i>Hỏi AI tư vấn
+                        </button>
+                    </form>
+                }
+                else
+                {
+                    <button class="btn btn-secondary btn-lg" disabled>
+                        <i class="bi bi-x-circle me-2"></i>Sản phẩm tạm hết hàng
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SẢN PHẨM LIÊN QUAN -->
+@if (relatedProducts != null && relatedProducts.Any())
+{
+    <h4 class="fw-bold mb-3"><i class="bi bi-collection text-primary me-2"></i>Sản phẩm cùng danh mục</h4>
+    <div class="row g-4">
+        @foreach (var rp in relatedProducts)
+        {
+            var isRelHot = bestSellers.TryGetValue(rp.ProductId, out int relSold);
+            <div class="col-6 col-md-3">
+                <div class="card h-100 shadow-sm border-0 product-card @(isRelHot ? "hot-fire-card" : "")">
+                    <div class="position-relative cursor-pointer product-img-stage" style="height: 175px; overflow: hidden;"
+                         onclick="window.open360Viewer('@rp.ImageUrl', '@Html.Raw(rp.ProductName.Replace("'", "\\'"))', '@Html.Raw(rp.Category.CategoryName.Replace("'", "\\'"))', '@rp.Price.ToString("N0") ₫', '/Product/Details/@rp.ProductId')">
+                        @if (!string.IsNullOrEmpty(rp.ImageUrl))
+                        {
+                            <img src="@rp.ImageUrl" alt="@rp.ProductName" class="w-100 h-100 product-img" style="object-fit: cover;" />
+                        }
+                        else
+                        {
+                            <div class="d-flex align-items-center justify-content-center h-100">
+                                <i class="bi bi-image text-secondary" style="font-size: 2rem;"></i>
+                            </div>
+                        }
+                        @if (isRelHot)
+                        {
+                            <div class="position-absolute top-0 start-0 m-2 z-2">
+                                <span class="hot-fire-badge"><span class="fire-icon-anim">🔥</span> HOT • @relSold+</span>
+                            </div>
+                            <div class="fire-flames-bar" aria-hidden="true"></div>
+                        }
+                        <div class="v360-trigger-pill"><i class="bi bi-arrow-repeat me-1"></i>Xem 360°</div>
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <h6 class="card-title fw-bold small mb-1">@rp.ProductName</h6>
+                        <p class="text-danger fw-bold mt-auto mb-2">@rp.Price.ToString("N0") ₫</p>
+                        <a asp-action="Details" asp-route-id="@rp.ProductId" class="btn btn-outline-primary btn-sm w-100">Xem chi tiết</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@section Scripts {
+    <script>
+        function changeQty(delta) {
+            const input = document.getElementById('qtyInput');
+            if (!input) return;
+            const max = parseInt(input.max) || 999;
+            let val = (parseInt(input.value) || 1) + delta;
+            if (val < 1) val = 1;
+            if (val > max) val = max;
+            input.value = val;
+        }
+    </script>
+}

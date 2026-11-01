@@ -1,0 +1,133 @@
+@model AquariumStore.ViewModels.CheckoutViewModel
+@{
+    ViewData["Title"] = "Thanh toán";
+    var qrAmount = (long)Model.TotalAmount;
+    var qrUrl = $"https://img.vietqr.io/image/MB-0817687979-compact2.png?amount={qrAmount}&addInfo=THANH%20TOAN%20AQUARIUM&accountName=LE%20THANH%20NHAN";
+}
+
+<h3 class="mb-4 fw-bold"><i class="bi bi-credit-card text-primary me-2"></i>Thanh toán đơn hàng</h3>
+
+<form asp-action="PlaceOrder" method="post">
+    <div class="row g-4">
+        <!-- THÔNG TIN GIAO HÀNG -->
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-primary text-white fw-semibold">
+                    <i class="bi bi-truck me-2"></i>Thông tin người nhận & Giao hàng
+                </div>
+                <div class="card-body">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="ShippingAddress" class="form-label fw-semibold"></label>
+                        <textarea asp-for="ShippingAddress" class="form-control" rows="3" placeholder="Số nhà, tên đường, phường/xã, quận/huyện, tỉnh/thành phố..."></textarea>
+                        <span asp-validation-for="ShippingAddress" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="RecipientPhone" class="form-label fw-semibold"></label>
+                        <input asp-for="RecipientPhone" class="form-control" placeholder="0901234567" />
+                        <span asp-validation-for="RecipientPhone" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="PaymentMethod" class="form-label fw-semibold"></label>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="form-check card p-3 border h-100">
+                                    <input class="form-check-input" type="radio" name="PaymentMethod" id="payCOD" value="COD" checked />
+                                    <label class="form-check-label w-100" for="payCOD">
+                                        <i class="bi bi-cash-stack text-success fs-5 me-1"></i>
+                                        <strong>Thanh toán khi nhận hàng (COD)</strong><br />
+                                        <small class="text-muted">Kiểm tra hàng & thanh toán tiền mặt cho shipper</small>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check card p-3 border h-100">
+                                    <input class="form-check-input" type="radio" name="PaymentMethod" id="payTransfer" value="Chuyển khoản" />
+                                    <label class="form-check-label w-100" for="payTransfer">
+                                        <i class="bi bi-qr-code-scan text-primary fs-5 me-1"></i>
+                                        <strong>Chuyển khoản QR Ngân hàng</strong><br />
+                                        <small class="text-muted">Quét mã VietQR tự động điền số tiền</small>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- THÔNG TIN CHUYỂN KHOẢN + MÃ VIETQR -->
+                    <div id="transferInfo" class="alert alert-info border-info mt-3" style="display: none;">
+                        <div class="row align-items-center g-3">
+                            <div class="col-sm-7">
+                                <h6 class="fw-bold"><i class="bi bi-bank me-1"></i>Thông tin chuyển khoản ngân hàng</h6>
+                                <p class="mb-1"><strong>Ngân hàng:</strong> MB BANK (Ngân hàng Quân Đội)</p>
+                                <p class="mb-1"><strong>Số tài khoản:</strong> <code class="fs-6 fw-bold">0817687979</code></p>
+                                <p class="mb-1"><strong>Chủ tài khoản:</strong> LE THANH NHAN</p>
+                                <p class="mb-1"><strong>Số tiền:</strong> <strong class="text-danger">@Model.TotalAmount.ToString("N0") ₫</strong></p>
+                                <p class="mb-0 small text-muted">Sau khi bấm <strong>Đặt hàng</strong>, hệ thống sẽ cấp mã đơn <code>DH-[Mã ĐH]</code> trên mã QR xác nhận.</p>
+                            </div>
+                            <div class="col-sm-5 text-center">
+                                <img src="@qrUrl" alt="VietQR" class="img-fluid rounded-3 shadow-sm bg-white p-2" style="max-width: 175px;" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TÓM TẮT ĐƠN HÀNG -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-dark text-white fw-semibold">
+                    <i class="bi bi-bag-check me-2"></i>Chi tiết giỏ hàng (@Model.CartItems.Sum(x => x.Quantity) sản phẩm)
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-sm align-middle mb-0">
+                        <tbody>
+                            @foreach (var item in Model.CartItems)
+                            {
+                                <tr>
+                                    <td class="ps-3 py-2">
+                                        <div class="fw-semibold">@item.ProductName</div>
+                                        <small class="text-muted">@item.Price.ToString("N0") ₫ × @item.Quantity</small>
+                                    </td>
+                                    <td class="text-end pe-3 text-danger fw-bold">@item.SubTotal.ToString("N0") ₫</td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot class="table-light">
+                            <tr>
+                                <td class="ps-3 text-muted">Phí đóng gói Oxy & Thùng xốp:</td>
+                                <td class="text-end pe-3 text-success fw-semibold">Miễn phí</td>
+                            </tr>
+                            <tr>
+                                <td class="ps-3 fw-bold fs-5">Tổng thanh toán</td>
+                                <td class="text-end pe-3 fw-bold fs-5 text-danger">@Model.TotalAmount.ToString("N0") ₫</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <div class="card-footer bg-white">
+                    <button type="submit" class="btn btn-primary w-100 btn-lg shadow-sm">
+                        <i class="bi bi-check-circle me-1"></i>Xác nhận Đặt hàng
+                    </button>
+                    <a asp-controller="Cart" asp-action="Index" class="btn btn-outline-secondary w-100 mt-2">
+                        <i class="bi bi-arrow-left me-1"></i>Quay lại giỏ hàng
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('input[name="PaymentMethod"]').forEach(radio => {
+            radio.addEventListener('change', function () {
+                document.getElementById('transferInfo').style.display =
+                    this.value === 'Chuyển khoản' ? 'block' : 'none';
+            });
+        });
+    </script>
+}

@@ -1,0 +1,469 @@
+@model List<AquariumStore.Models.Product>
+@{
+    ViewData["Title"] = "Trang chủ"; // Tiêu đề trang chủ
+    var categories = ViewBag.Categories as List<AquariumStore.Models.Category>; // Danh sách danh mục sản phẩm
+    var featuredProducts = ViewBag.FeaturedProducts as List<AquariumStore.Models.Product>; // Danh sách sản phẩm nổi bật
+    var shrimpAndRodProducts = ViewBag.ShrimpAndRodProducts as List<AquariumStore.Models.Product>; // Bộ sưu tập Tép cảnh, Cầu rêu & Cần câu
+    var beginnerProducts = ViewBag.BeginnerProducts as List<AquariumStore.Models.Product>; // Gợi ý cho người mới bắt đầu
+    var bestSellers = ViewBag.BestSellers as Dictionary<int, int> ?? new Dictionary<int, int>(); // Từ điển sản phẩm bán chạy nhất
+
+    string GetCategoryIcon(string name) => name switch // Hàm chọn biểu tượng Bootstrap Icon theo tên danh mục
+    {
+        var n when n.Contains("Tép", StringComparison.OrdinalIgnoreCase) => "bi-stars text-danger", // Icon cho danh mục Tép cảnh & Cầu rêu
+        var n when n.Contains("Cần câu", StringComparison.OrdinalIgnoreCase) => "bi-compass text-dark", // Icon cho danh mục Cần câu & Dụng cụ
+        var n when n.Contains("nước ngọt", StringComparison.OrdinalIgnoreCase) => "bi-droplet-half text-primary", // Icon cá nước ngọt
+        var n when n.Contains("nước mặn", StringComparison.OrdinalIgnoreCase) => "bi-tsunami text-info", // Icon cá nước mặn
+        var n when n.Contains("thủy sinh", StringComparison.OrdinalIgnoreCase) => "bi-tree text-success", // Icon cây thủy sinh
+        var n when n.Contains("Thiết bị", StringComparison.OrdinalIgnoreCase) => "bi-cpu text-warning", // Icon thiết bị bể cá
+        var n when n.Contains("Thức ăn", StringComparison.OrdinalIgnoreCase) => "bi-capsule text-danger", // Icon thức ăn & thuốc
+        _ => "bi-gem text-secondary" // Icon mặc định cho phụ kiện trang trí
+    };
+}
+
+<!-- HERO CAROUSEL BANNER CÓ HIỆU ỨNG BONG BÓNG NƯỚC ĐẠI DƯƠNG -->
+<div id="heroCarousel" class="carousel slide mb-4 shadow rounded-4 overflow-hidden position-relative" data-bs-ride="carousel">
+    <!-- Hiệu ứng bong bóng nước nổi nhẹ nhàng trên toàn bộ Banner -->
+    <div class="bubble-container" aria-hidden="true">
+        <span class="water-bubble b1"></span>
+        <span class="water-bubble b2"></span>
+        <span class="water-bubble b3"></span>
+        <span class="water-bubble b4"></span>
+        <span class="water-bubble b5"></span>
+        <span class="water-bubble b6"></span>
+    </div>
+    <div class="carousel-indicators">
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active"></button>
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1"></button>
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2"></button>
+    </div>
+    <div class="carousel-inner">
+        <!-- Slide 1 -->
+        <div class="carousel-item active">
+            <div class="hero-slide p-4 p-md-5 text-white d-flex align-items-center"
+                 style="background: linear-gradient(125deg, #023e8a 0%, #0077b6 50%, #00b4d8 100%); min-height: 340px;">
+                <div class="row align-items-center w-100 g-4">
+                    <div class="col-lg-7">
+                        <span class="badge bg-warning text-dark mb-2 px-3 py-2 rounded-pill fw-semibold">
+                            <i class="bi bi-stars me-1"></i>Hệ sinh thái Thủy sinh, Cá cảnh, Tép cảnh &amp; Cần câu
+                        </span>
+                        <h1 class="display-5 fw-bold mb-3">Khám Phá Đại Dương Thu Nhỏ Trong Không Gian Sống</h1>
+                        <p class="lead opacity-90 mb-4">
+                            Cung cấp hơn <strong>@Model.Count+</strong> dòng cá cảnh, tép cảnh thuần chủng, cầu rêu Marimo, cần câu Carbon và thiết bị bể cá chính hãng với bảo hành sống 100%.
+                        </p>
+                        <div class="d-flex flex-wrap gap-2">
+                            <a asp-controller="Home" asp-action="Landing" class="btn btn-warning btn-lg px-4 fw-bold text-dark shadow-sm">
+                                <i class="bi bi-stars me-2"></i>Landing Page Tép Cảnh &amp; Cần Câu
+                            </a>
+                            <a asp-controller="Product" asp-action="Index" class="btn btn-light btn-lg px-4 fw-semibold text-primary shadow-sm">
+                                <i class="bi bi-bag-heart me-2"></i>Mua sắm ngay
+                            </a>
+                            <a asp-controller="Home" asp-action="Guide" class="btn btn-outline-light btn-lg px-4">
+                                <i class="bi bi-book me-2"></i>Cẩm nang nuôi cá
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-lg-5 d-none d-lg-block text-center">
+                        <div class="row g-3 text-dark">
+                            <div class="col-6">
+                                <div class="bg-white bg-opacity-90 rounded-4 p-3 shadow-sm">
+                                    <i class="bi bi-shield-check text-success fs-1"></i>
+                                    <h4 class="fw-bold mb-0 mt-1">100%</h4>
+                                    <small class="text-muted">Bảo hành cá sống 48h</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="bg-white bg-opacity-90 rounded-4 p-3 shadow-sm">
+                                    <i class="bi bi-truck text-primary fs-1"></i>
+                                    <h4 class="fw-bold mb-0 mt-1">2H - 24H</h4>
+                                    <small class="text-muted">Giao nhanh đóng Oxy</small>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="bg-white bg-opacity-90 rounded-4 p-3 shadow-sm d-flex align-items-center justify-content-around">
+                                    <div>
+                                        <h5 class="fw-bold text-primary mb-0">Tư vấn Setup Bể Thủy Sinh</h5>
+                                        <small class="text-muted">Hỗ trợ kỹ thuật trọn đời từ chuyên gia</small>
+                                    </div>
+                                    <i class="bi bi-headset fs-1 text-info"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2 -->
+        <div class="carousel-item">
+            <div class="hero-slide p-4 p-md-5 text-white d-flex align-items-center"
+                 style="background: linear-gradient(125deg, #1b4332 0%, #2d6a4f 55%, #40916c 100%); min-height: 340px;">
+                <div class="col-lg-8">
+                    <span class="badge bg-light text-success mb-2 px-3 py-2 rounded-pill fw-semibold">
+                        <i class="bi bi-tree me-1"></i>Nature Aquarium & Aquascaping
+                    </span>
+                    <h1 class="display-5 fw-bold mb-3">Cây Thủy Sinh & Bố Cục Lũa Đá Tự Nhiên</h1>
+                    <p class="lead opacity-90 mb-4">
+                        Trân châu ngọc trai, Ráy Nana Petite, Dương xỉ, Rong đuôi chồn cùng gỗ lũa Redmoor tuyển chọn cho bể thủy sinh xanh mát.
+                    </p>
+                    <a asp-controller="Product" asp-action="Index" asp-route-categoryId="3" class="btn btn-warning btn-lg px-4 fw-semibold">
+                        <i class="bi bi-flower1 me-2"></i>Xem cây thủy sinh
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3 -->
+        <div class="carousel-item">
+            <div class="hero-slide p-4 p-md-5 text-white d-flex align-items-center"
+                 style="background: linear-gradient(125deg, #1d3557 0%, #457b9d 60%, #0096c7 100%); min-height: 340px;">
+                <div class="col-lg-8">
+                    <span class="badge bg-info text-dark mb-2 px-3 py-2 rounded-pill fw-semibold">
+                        <i class="bi bi-cpu me-1"></i>Thiết Bị Bể Cá Chính Hãng
+                    </span>
+                    <h1 class="display-5 fw-bold mb-3">Bể Kính Siêu Trong, Đèn WRGB & Lọc Thùng Cao Cấp</h1>
+                    <p class="lead opacity-90 mb-4">
+                        Trọn bộ giải pháp chiếu sáng, lọc vi sinh và dinh dưỡng giúp hệ sinh thái bể cá luôn trong vắt và ổn định.
+                    </p>
+                    <a asp-controller="Product" asp-action="Index" asp-route-categoryId="4" class="btn btn-light btn-lg px-4 fw-semibold text-dark">
+                        <i class="bi bi-gear-wide-connected me-2"></i>Khám phá thiết bị
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 4 CAM KẾT DỊCH VỤ -->
+<div class="row g-3 mb-5">
+    <div class="col-6 col-lg-3">
+        <div class="card border-0 shadow-sm h-100 feature-box">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="feature-icon bg-primary bg-opacity-10 text-primary rounded-3 p-3">
+                    <i class="bi bi-shield-fill-check fs-3"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold mb-1">Bảo hành sống 100%</h6>
+                    <small class="text-muted">Đổi mới hoặc hoàn tiền nếu rủi ro vận chuyển</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="card border-0 shadow-sm h-100 feature-box">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="feature-icon bg-success bg-opacity-10 text-success rounded-3 p-3">
+                    <i class="bi bi-box2-heart fs-3"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold mb-1">Đóng gói Oxy 3 lớp</h6>
+                    <small class="text-muted">Túi chuyên dụng + thùng xốp cách nhiệt an toàn</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="card border-0 shadow-sm h-100 feature-box">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="feature-icon bg-warning bg-opacity-10 text-warning rounded-3 p-3">
+                    <i class="bi bi-award fs-3"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold mb-1">Thiết bị chính hãng</h6>
+                    <small class="text-muted">Bảo hành 6 - 12 tháng đổi trả trong 7 ngày</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="card border-0 shadow-sm h-100 feature-box">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="feature-icon bg-info bg-opacity-10 text-info rounded-3 p-3">
+                    <i class="bi bi-chat-heart fs-3"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold mb-1">Tư vấn thủy sinh 24/7</h6>
+                    <small class="text-muted">Hỗ trợ xử lý nước, rêu hại & bệnh cá miễn phí</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- DANH MỤC NỔI BẬT -->
+@if (categories != null && categories.Any())
+{
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="fw-bold mb-0"><i class="bi bi-grid-1x2-fill text-primary me-2"></i>Danh mục sản phẩm</h3>
+        <a asp-controller="Product" asp-action="Index" class="text-decoration-none fw-semibold">
+            Xem tất cả <i class="bi bi-arrow-right"></i>
+        </a>
+    </div>
+    <div class="row g-3 mb-5">
+        @foreach (var cat in categories)
+        {
+            var count = cat.Products?.Count(p => p.IsActive) ?? 0;
+            <div class="col-6 col-md-4 col-lg-3">
+                <a asp-controller="Product" asp-action="Index" asp-route-categoryId="@cat.CategoryId"
+                   class="text-decoration-none">
+                    <div class="card text-center border-0 shadow-sm h-100 category-card">
+                        <div class="card-body py-3 px-2">
+                            <div class="category-icon-circle mx-auto mb-2">
+                                <i class="bi @GetCategoryIcon(cat.CategoryName) fs-2"></i>
+                            </div>
+                            <h6 class="mt-2 mb-1 text-dark fw-semibold">@cat.CategoryName</h6>
+                            <span class="badge bg-light text-secondary border">@count sản phẩm</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        }
+    </div>
+}
+
+<!-- CHUYÊN MỤC ĐẶC BIỆT: LANDING SHOWCASE TÉP CẢNH, CẦU RÊU & CẦN CÂU -->
+@if (shrimpAndRodProducts != null && shrimpAndRodProducts.Any())
+{
+    <div class="p-4 p-md-5 rounded-4 shadow-sm mb-5 position-relative overflow-hidden text-white reveal-on-scroll"
+         style="background: linear-gradient(135deg, #0f172a 0%, #0369a1 55%, #0d9488 100%);">
+        <div class="bubble-container" aria-hidden="true">
+            <span class="water-bubble b1"></span>
+            <span class="water-bubble b3"></span>
+            <span class="water-bubble b5"></span>
+            <span class="water-bubble b7"></span>
+        </div>
+        <div class="position-relative" style="z-index: 2;">
+            <div class="d-flex flex-wrap justify-content-between align-items-end mb-4">
+                <div>
+                    <span class="badge bg-warning text-dark fw-bold px-3 py-1 rounded-pill mb-2">
+                        <i class="bi bi-stars me-1"></i>CHUYÊN TRANG MỚI RA MẮT
+                    </span>
+                    <h3 class="fw-bold mb-1">Thế Giới Tép Cảnh Cao Cấp, Cầu Rêu Marimo &amp; Cần Câu Carbon</h3>
+                    <p class="opacity-85 mb-0">Trải nghiệm Landing Page tương tác với bảng chuẩn thông số nước TDS/pH và bộ chọn Combo thông minh</p>
+                </div>
+                <a asp-controller="Home" asp-action="Landing" class="btn btn-warning fw-bold text-dark px-4 mt-3 mt-md-0 shadow-sm">
+                    Mở Landing Page Chuyên Sâu <i class="bi bi-arrow-up-right-circle-fill ms-1"></i>
+                </a>
+            </div>
+
+            <div class="row g-3">
+                @foreach (var sp in shrimpAndRodProducts.Take(4))
+                {
+                    var isSpHot = bestSellers.TryGetValue(sp.ProductId, out int spSold);
+                    <div class="col-6 col-lg-3">
+                        <div class="card h-100 border-0 shadow product-card shimmer-card text-dark @(isSpHot ? "hot-fire-card" : "")">
+                            <div class="position-relative cursor-pointer product-img-stage" style="height: 175px; overflow: hidden;"
+                                 onclick="window.open360Viewer('@sp.ImageUrl', '@Html.Raw(sp.ProductName.Replace("'", "\\'"))', '@Html.Raw(sp.Category.CategoryName.Replace("'", "\\'"))', '@sp.Price.ToString("N0") ₫', '/Product/Details/@sp.ProductId')">
+                                <img src="@sp.ImageUrl" alt="@sp.ProductName" class="w-100 h-100 product-img" style="object-fit: cover;" />
+                                @if (isSpHot)
+                                {
+                                    <div class="position-absolute top-0 start-0 m-2 z-2">
+                                        <span class="hot-fire-badge"><span class="fire-icon-anim">🔥</span> HOT • @spSold+</span>
+                                    </div>
+                                    <div class="fire-flames-bar" aria-hidden="true"></div>
+                                }
+                                <span class="position-absolute top-0 end-0 m-2 badge bg-dark bg-opacity-75 z-2">Kho: @sp.StockQuantity</span>
+                                <div class="v360-trigger-pill"><i class="bi bi-arrow-repeat me-1"></i>Xem 360°</div>
+                            </div>
+                            <div class="card-body d-flex flex-column p-3">
+                                <span class="badge bg-info-subtle text-primary align-self-start mb-1">@sp.Category.CategoryName</span>
+                                <h6 class="fw-bold mb-1 text-truncate">
+                                    <a asp-controller="Product" asp-action="Details" asp-route-id="@sp.ProductId" class="text-dark text-decoration-none">
+                                        @sp.ProductName
+                                    </a>
+                                </h6>
+                                <div class="text-danger fw-bold fs-6 mt-auto mb-2">@sp.Price.ToString("N0") ₫</div>
+                                <div class="d-flex gap-1">
+                                    <a asp-controller="Product" asp-action="Details" asp-route-id="@sp.ProductId" class="btn btn-outline-primary btn-sm flex-grow-1">Chi tiết</a>
+                                    <form asp-controller="Cart" asp-action="Add" method="post" class="flex-grow-1">
+                                        <input type="hidden" name="productId" value="@sp.ProductId" />
+                                        <button type="submit" class="btn btn-primary btn-sm w-100"><i class="bi bi-cart-plus"></i></button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+<!-- SẢN PHẨM NỔI BẬT & BÁN CHẠY NHẤT -->
+@if (featuredProducts != null && featuredProducts.Any())
+{
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h3 class="fw-bold mb-0"><i class="bi bi-fire text-danger me-2"></i>Sản phẩm bán chạy &amp; nổi bật</h3>
+            <small class="text-muted">Các sản phẩm bán chạy nhất sẽ tự động bốc cháy hiệu ứng HOT Lửa Đỏ Cam — Bấm vào ảnh để xoay 360°</small>
+        </div>
+        <a asp-controller="Product" asp-action="Index" class="btn btn-outline-primary btn-sm">
+            Xem toàn bộ (@Model.Count) <i class="bi bi-chevron-right"></i>
+        </a>
+    </div>
+    <div class="row g-4 mb-5">
+        @foreach (var product in featuredProducts)
+        {
+            var isHot = bestSellers.TryGetValue(product.ProductId, out int soldCount);
+            <div class="col-6 col-md-4 col-lg-3">
+                <div class="card h-100 shadow-sm border-0 product-card @(isHot ? "hot-fire-card" : "")">
+                    <div class="card-img-top-wrapper position-relative cursor-pointer product-img-stage" style="height: 210px; overflow: hidden;"
+                         onclick="window.open360Viewer('@product.ImageUrl', '@Html.Raw(product.ProductName.Replace("'", "\\'"))', '@Html.Raw(product.Category.CategoryName.Replace("'", "\\'"))', '@product.Price.ToString("N0") ₫', '/Product/Details/@product.ProductId')"
+                         title="Bấm vào ảnh để xem xoay 360 độ">
+                        @if (!string.IsNullOrEmpty(product.ImageUrl))
+                        {
+                            <img src="@product.ImageUrl" alt="@product.ProductName"
+                                 class="w-100 h-100 product-img" style="object-fit: cover;" />
+                        }
+                        else
+                        {
+                            <div class="d-flex align-items-center justify-content-center h-100">
+                                <i class="bi bi-image text-secondary" style="font-size: 3rem;"></i>
+                            </div>
+                        }
+                        @if (isHot)
+                        {
+                            <div class="position-absolute top-0 start-0 m-2 z-2">
+                                <span class="hot-fire-badge">
+                                    <span class="fire-icon-anim">🔥</span> BÁN CHẠY • @soldCount+
+                                </span>
+                            </div>
+                            <div class="fire-flames-bar" aria-hidden="true"></div>
+                        }
+                        <div class="position-absolute top-0 end-0 m-2 z-2">
+                            @if (product.StockQuantity <= 0)
+                            {
+                                <span class="badge bg-danger shadow-sm">Hết hàng</span>
+                            }
+                            else if (product.StockQuantity <= 5)
+                            {
+                                <span class="badge bg-warning text-dark shadow-sm">Chỉ còn @product.StockQuantity</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success bg-opacity-90 shadow-sm">Sẵn hàng</span>
+                            }
+                        </div>
+                        <div class="v360-trigger-pill"><i class="bi bi-arrow-repeat me-1"></i>Xem 360°</div>
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <span class="badge bg-info bg-opacity-10 text-primary border border-info mb-2 align-self-start">
+                            @product.Category.CategoryName
+                        </span>
+                        <h6 class="card-title fw-bold mb-1">
+                            <a asp-controller="Product" asp-action="Details" asp-route-id="@product.ProductId" class="text-dark text-decoration-none">
+                                @product.ProductName
+                            </a>
+                        </h6>
+                        <p class="text-muted small text-truncate-2 mb-2">@product.Description</p>
+                        <div class="d-flex justify-content-between align-items-center mt-auto mb-2">
+                            <span class="text-danger fw-bold fs-5">@product.Price.ToString("N0") ₫</span>
+                            <small class="text-muted">Kho: @product.StockQuantity</small>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <a asp-controller="Product" asp-action="Details" asp-route-id="@product.ProductId"
+                               class="btn btn-outline-primary btn-sm flex-grow-1">
+                                <i class="bi bi-eye"></i> Chi tiết
+                            </a>
+                            <form asp-controller="Cart" asp-action="Add" method="post" class="flex-grow-1">
+                                <input type="hidden" name="productId" value="@product.ProductId" />
+                                <button type="submit" class="btn btn-primary btn-sm w-100"
+                                        @(product.StockQuantity <= 0 ? "disabled" : "")>
+                                    <i class="bi bi-cart-plus"></i> Thêm giỏ
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<!-- GỢI Ý CHO NGƯỜI MỚI BẮT ĐẦU -->
+@if (beginnerProducts != null && beginnerProducts.Any())
+{
+    <div class="p-4 rounded-4 mb-5" style="background: linear-gradient(135deg, #e0f7fa 0%, #f1f8e9 100%); border: 1px solid #b2ebf2;">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+            <div>
+                <span class="badge bg-success mb-1">Gợi ý Starter</span>
+                <h4 class="fw-bold mb-0"><i class="bi bi-lightbulb text-warning me-2"></i>Dành cho người mới chơi thủy sinh</h4>
+                <small class="text-muted">Các dòng cá cảnh và cây thủy sinh khỏe, dễ chăm sóc, chi phí tiết kiệm</small>
+            </div>
+            <a asp-controller="Product" asp-action="Index" asp-route-sortBy="price_asc" class="btn btn-success btn-sm mt-2 mt-md-0">
+                Xem sản phẩm giá tốt <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+        <div class="row g-3">
+            @foreach (var item in beginnerProducts)
+            {
+                <div class="col-6 col-lg-3">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body d-flex align-items-center gap-3 p-3">
+                            <img src="@item.ImageUrl" alt="@item.ProductName" class="rounded-3 flex-shrink-0"
+                                 style="width: 68px; height: 68px; object-fit: cover;" />
+                            <div class="overflow-hidden">
+                                <h6 class="fw-bold text-truncate mb-1">
+                                    <a asp-controller="Product" asp-action="Details" asp-route-id="@item.ProductId" class="text-dark text-decoration-none">
+                                        @item.ProductName
+                                    </a>
+                                </h6>
+                                <div class="text-danger fw-bold mb-1">@item.Price.ToString("N0") ₫</div>
+                                <a asp-controller="Product" asp-action="Details" asp-route-id="@item.ProductId" class="btn btn-sm btn-outline-success py-0 px-2">
+                                    Xem ngay
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+<!-- CẨM NANG CHĂM SÓC NHANH -->
+<div class="mb-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="fw-bold mb-0"><i class="bi bi-journal-medical text-success me-2"></i>Cẩm nang nuôi cá & Thủy sinh</h3>
+        <a asp-controller="Home" asp-action="Guide" class="text-decoration-none fw-semibold">
+            Xem cẩm nang chi tiết <i class="bi bi-arrow-right"></i>
+        </a>
+    </div>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <span class="badge bg-primary bg-opacity-10 text-primary mb-2">Kỹ thuật cơ bản</span>
+                    <h5 class="fw-bold">Quy trình 4 bước thả cá mới mua về</h5>
+                    <p class="text-muted small mb-3">
+                        Ngâm bịch 15–20 phút để cân bằng nhiệt độ, châm nước bể từ từ mỗi 5 phút trước khi vớt cá thả vào bể nhằm tránh sốc nhiệt và sốc pH.
+                    </p>
+                    <a asp-controller="Home" asp-action="Guide" class="btn btn-sm btn-outline-primary">Đọc hướng dẫn</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <span class="badge bg-success bg-opacity-10 text-success mb-2">Hệ vi sinh</span>
+                    <h5 class="fw-bold">Chu trình Nitơ & Cách xử lý nước đục</h5>
+                    <p class="text-muted small mb-3">
+                        Chạy lọc tuần hoàn tối thiểu 3–7 ngày cùng vi sinh trước khi thả cá giúp chuyển hóa độc tố NH3/NO2 thành NO3 an toàn cho cây hấp thụ.
+                    </p>
+                    <a asp-controller="Home" asp-action="Guide" class="btn btn-sm btn-outline-success">Đọc hướng dẫn</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <span class="badge bg-warning bg-opacity-10 text-dark mb-2">Thiết bị bể cá</span>
+                    <h5 class="fw-bold">Công thức chọn lọc & đèn theo kích thước</h5>
+                    <p class="text-muted small mb-3">
+                        Lưu lượng máy lọc nên gấp 6–10 lần thể tích nước trong bể mỗi giờ (ví dụ bể 60cm ~65L cần lọc 500–650L/h) và chiếu sáng 6–8 giờ/ngày.
+                    </p>
+                    <a asp-controller="Home" asp-action="Guide" class="btn btn-sm btn-outline-warning text-dark">Đọc hướng dẫn</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

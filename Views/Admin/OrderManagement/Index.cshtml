@@ -1,0 +1,83 @@
+@model List<AquariumStore.Models.Order>
+@{
+    ViewData["Title"] = "Quản lý đơn hàng";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var currentStatus = ViewBag.CurrentStatus as string;
+    var statuses = new[] { "Chờ xử lý", "Đã xác nhận", "Đang giao", "Hoàn thành", "Đã hủy" };
+}
+
+<h3 class="mb-4"><i class="bi bi-receipt me-2"></i>Quản lý đơn hàng</h3>
+
+<!-- BỘ LỌC TRẠNG THÁI -->
+<div class="mb-3">
+    <a href="/Admin/OrderManagement" class="btn btn-sm @(string.IsNullOrEmpty(currentStatus) ? "btn-dark" : "btn-outline-dark") me-1">
+        Tất cả
+    </a>
+    @foreach (var s in statuses)
+    {
+        var btnClass = s switch {
+            "Chờ xử lý" => "warning",
+            "Đã xác nhận" => "info",
+            "Đang giao" => "primary",
+            "Hoàn thành" => "success",
+            "Đã hủy" => "danger",
+            _ => "secondary"
+        };
+        <a href="/Admin/OrderManagement?status=@s"
+           class="btn btn-sm @(currentStatus == s ? $"btn-{btnClass}" : $"btn-outline-{btnClass}") me-1">
+            @s
+        </a>
+    }
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Mã ĐH</th>
+                        <th>Khách hàng</th>
+                        <th>Ngày đặt</th>
+                        <th>Tổng tiền</th>
+                        <th>Thanh toán</th>
+                        <th>Trạng thái</th>
+                        <th>SP</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr><td colspan="8" class="text-center text-muted py-4">Không có đơn hàng nào.</td></tr>
+                    }
+                    @foreach (var o in Model)
+                    {
+                        var bc = o.Status switch {
+                            "Chờ xử lý" => "bg-warning text-dark",
+                            "Đã xác nhận" => "bg-info",
+                            "Đang giao" => "bg-primary",
+                            "Hoàn thành" => "bg-success",
+                            "Đã hủy" => "bg-danger",
+                            _ => "bg-secondary"
+                        };
+                        <tr>
+                            <td class="fw-bold">#@o.OrderId</td>
+                            <td>@o.User.FullName</td>
+                            <td>@o.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td class="text-danger fw-bold">@o.TotalAmount.ToString("N0") ₫</td>
+                            <td>@o.PaymentMethod</td>
+                            <td><span class="badge @bc">@o.Status</span></td>
+                            <td>@o.OrderDetails.Count</td>
+                            <td>
+                                <a href="/Admin/OrderManagement/Details/@o.OrderId" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye"></i> Chi tiết
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

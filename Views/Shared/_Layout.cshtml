@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Aquarium Store</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <!-- TOP ANNOUNCEMENT BAR -->
+    <div class="bg-dark text-light py-1 small d-none d-md-block no-print">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div>
+                <span class="me-3"><i class="bi bi-truck text-info me-1"></i>Miễn phí giao hàng đơn từ 500.000₫</span>
+                <span><i class="bi bi-shield-check text-success me-1"></i>Bảo hành cá sống 100% khi vận chuyển</span>
+            </div>
+            <div>
+                <span class="me-3"><i class="bi bi-clock me-1"></i>Mở cửa: 08:00 - 21:30 (T2 - CN)</span>
+                <span class="text-warning fw-semibold"><i class="bi bi-telephone-fill me-1"></i>Hotline: 0901 234 567</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- HEADER / NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top shadow-sm no-print">
+        <div class="container">
+            <a class="navbar-brand fw-bold d-flex align-items-center" href="/">
+                <i class="bi bi-water me-2 fs-4"></i>Aquarium Store
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="mainNavbar">
+                <ul class="navbar-nav me-auto gap-lg-1">
+                    <li class="nav-item"> <!-- Mục điều hướng về Trang chủ -->
+                        <a class="nav-link text-nowrap" asp-controller="Home" asp-action="Index">
+                            <i class="bi bi-house-door me-1"></i>Trang chủ
+                        </a>
+                    </li>
+                    <li class="nav-item"> <!-- Mục điều hướng mở chuyên trang Landing Page Tép Cảnh & Cần Câu -->
+                        <a class="nav-link fw-semibold text-warning text-nowrap" asp-controller="Home" asp-action="Landing">
+                            <i class="bi bi-stars me-1"></i>Tép Cảnh &amp; Cần Câu
+                        </a>
+                    </li>
+                    <li class="nav-item"> <!-- Mục điều hướng xem toàn bộ danh sách Sản phẩm -->
+                        <a class="nav-link text-nowrap" asp-controller="Product" asp-action="Index">
+                            <i class="bi bi-grid me-1"></i>Sản phẩm
+                        </a>
+                    </li>
+                    <li class="nav-item"> <!-- Mục điều hướng Cẩm nang -->
+                        <a class="nav-link text-nowrap" asp-controller="Home" asp-action="Guide">
+                            <i class="bi bi-journal-medical me-1"></i>Cẩm nang
+                        </a>
+                    </li>
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-nowrap" asp-controller="Order" asp-action="History">
+                                <i class="bi bi-receipt-cutoff me-1"></i>Đơn mua
+                            </a>
+                        </li>
+                    }
+                </ul>
+
+                <!-- Thanh tìm kiếm -->
+                <form class="d-flex me-2 my-2 my-lg-0" asp-controller="Product" asp-action="Index" method="get">
+                    <div class="input-group input-group-sm">
+                        <input type="text" name="search" class="form-control border-0" placeholder="Tìm tép, cần câu, cá..."
+                               value="@Context.Request.Query["search"]" style="width: 175px;" />
+                        <button class="btn btn-light text-primary" type="submit"><i class="bi bi-search"></i></button>
+                    </div>
+                </form>
+
+                <ul class="navbar-nav align-items-lg-center flex-nowrap">
+                    <!-- Giỏ hàng -->
+                    <li class="nav-item me-2">
+                        <a class="nav-link position-relative" asp-controller="Cart" asp-action="Index" title="Giỏ hàng">
+                            <i class="bi bi-cart3 fs-5"></i>
+                            <span id="cart-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem; display: none;">
+                            </span>
+                        </a>
+                    </li>
+
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-nowrap" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-person-circle me-1"></i>
+                                @(User.FindFirst("FullName")?.Value ?? User.Identity.Name)
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                                @if (User.IsInRole("Admin") || User.IsInRole("Staff"))
+                                {
+                                    <li>
+                                        <a class="dropdown-item fw-semibold text-primary" href="/Admin/Dashboard">
+                                            <i class="bi bi-speedometer2 me-2"></i>Bảng điều khiển Quản trị
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider" /></li>
+                                }
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Account" asp-action="Profile">
+                                        <i class="bi bi-person-vcard me-2"></i>Hồ sơ cá nhân
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Order" asp-action="History">
+                                        <i class="bi bi-clock-history me-2"></i>Lịch sử đơn hàng
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider" /></li>
+                                <li>
+                                    <form asp-controller="Account" asp-action="Logout" method="post">
+                                        <button class="dropdown-item text-danger" type="submit">
+                                            <i class="bi bi-box-arrow-right me-2"></i>Đăng xuất
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-nowrap" asp-controller="Account" asp-action="Login">
+                                <i class="bi bi-box-arrow-in-right me-1"></i>Đăng nhập
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-light btn-sm text-primary fw-semibold ms-lg-1 text-nowrap" asp-controller="Account" asp-action="Register">
+                                <i class="bi bi-person-plus me-1"></i>Đăng ký
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- THÔNG BÁO -->
+    <div class="container mt-3 no-print">
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i>@TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>@TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+    </div>
+
+    <!-- NỘI DUNG CHÍNH -->
+    <main class="container py-4 flex-grow-1">
+        @RenderBody()
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-white border-top pt-5 pb-4 mt-auto no-print">
+        <div class="container">
+            <div class="row g-4">
+                <!-- CỘT 1: THÔNG TIN CỬA HÀNG -->
+                <div class="col-lg-4">
+                    <h5 class="fw-bold text-primary mb-3"><i class="bi bi-water me-2"></i>AQUARIUM STORE</h5>
+                    <p class="text-secondary small mb-3">
+                        Hệ thống chuyên cung cấp cá cảnh nội - ngoại nhập, cây thủy sinh cấy mô, lũa đá tự nhiên và thiết bị bể cá chính hãng.
+                    </p>
+                    <ul class="list-unstyled text-secondary small mb-0">
+                        <li class="mb-2"><i class="bi bi-geo-alt-fill text-primary me-2"></i>123 Nguyễn Huệ, Quận 1, TP.HCM</li>
+                        <li class="mb-2"><i class="bi bi-telephone-fill text-primary me-2"></i>0901 234 567 (Zalo Kỹ thuật 24/7)</li>
+                        <li class="mb-2"><i class="bi bi-envelope-fill text-primary me-2"></i>info@aquariumstore.vn</li>
+                        <li class="mb-0"><i class="bi bi-clock-fill text-primary me-2"></i>08:00 – 21:30 (Tất cả các ngày trong tuần)</li>
+                    </ul>
+                </div>
+
+                <!-- CỘT 2: HƯỚNG DẪN & CHẤP NHẬN THANH TOÁN -->
+                <div class="col-md-6 col-lg-4">
+                    <h6 class="fw-bold text-uppercase mb-3 footer-heading">HƯỚNG DẪN</h6>
+                    <ul class="list-unstyled footer-links mb-4">
+                        <li><a asp-controller="Home" asp-action="Policy" asp-route-topic="huong-dan-mua-hang">Hướng dẫn mua hàng</a></li>
+                        <li><a asp-controller="Home" asp-action="Policy" asp-route-topic="huong-dan-thanh-toan">Hướng dẫn thanh toán</a></li>
+                        <li><a asp-controller="Home" asp-action="Policy" asp-route-topic="huong-dan-giao-nhan">Hướng dẫn giao nhận</a></li>
+                        <li><a asp-controller="Home" asp-action="Policy" asp-route-topic="dieu-khoan-dich-vu">Điều khoản dịch vụ</a></li>
+                        <li><a asp-controller="Home" asp-action="Policy" asp-route-topic="freeship-shopee">Hướng dẫn mua hàng miễn phí vận chuyển trên Shopee</a></li>
+                    </ul>
+
+                    <h6 class="fw-bold text-uppercase mb-3 footer-heading">CHẤP NHẬN THANH TOÁN</h6>
+                    <div class="d-flex flex-wrap align-items-center gap-2">
+                        <!-- VISA -->
+                        <div class="payment-card-badge" title="VISA">
+                            <svg width="54" height="34" viewBox="0 0 54 34" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="54" height="34" rx="4" fill="#ffffff" stroke="#e0e0e0"/>
+                                <rect y="0" width="54" height="6" rx="2" fill="#1a1f71"/>
+                                <rect y="28" width="54" height="6" rx="2" fill="#f7b600"/>
+                                <text x="27" y="21" text-anchor="middle" fill="#1a1f71" font-family="Arial, sans-serif" font-weight="900" font-style="italic" font-size="13">VISA</text>
+                            </svg>
+                        </div>
+                        <!-- MasterCard -->
+                        <div class="payment-card-badge" title="MasterCard">
+                            <svg width="54" height="34" viewBox="0 0 54 34" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="54" height="34" rx="4" fill="#1f4e79"/>
+                                <circle cx="21" cy="17" r="10" fill="#eb001b"/>
+                                <circle cx="33" cy="17" r="10" fill="#f79e1b" fill-opacity="0.9"/>
+                                <text x="27" y="19" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-weight="700" font-size="6.2">MasterCard</text>
+                            </svg>
+                        </div>
+                        <!-- PayPal -->
+                        <div class="payment-card-badge" title="PayPal">
+                            <svg width="54" height="34" viewBox="0 0 54 34" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="54" height="34" rx="4" fill="#fffdf7" stroke="#f3c68f"/>
+                                <text x="27" y="21" text-anchor="middle" font-family="Arial, sans-serif" font-weight="900" font-style="italic" font-size="11.5">
+                                    <tspan fill="#003087">Pay</tspan><tspan fill="#0079c1">Pal</tspan>
+                                </text>
+                            </svg>
+                        </div>
+                        <!-- JCB -->
+                        <div class="payment-card-badge" title="JCB">
+                            <svg width="54" height="34" viewBox="0 0 54 34" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="54" height="34" rx="4" fill="#f8f9fa" stroke="#e0e0e0"/>
+                                <rect x="9" y="5" width="11" height="24" rx="3" fill="#004ea2"/>
+                                <rect x="21.5" y="5" width="11" height="24" rx="3" fill="#e4002b"/>
+                                <rect x="34" y="5" width="11" height="24" rx="3" fill="#009944"/>
+                                <text x="27" y="20" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-weight="900" font-size="9" letter-spacing="2">JCB</text>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CỘT 3: CHÍNH SÁCH & BỘ CÔNG THƯƠNG -->
+                <div class="col-md-6 col-lg-4">
+                    <h6 class="fw-bold text-uppercase mb-3 footer-heading">CHÍNH SÁCH</h6>
+                    <ul class="list-unstyled footer-links mb-4">
+                        <li><a asp-controller="Home" asp-action="Policy" asp-route-topic="quy-dinh-chung">Chính sách &amp; Quy định chung</a></li>
+                        <li><a asp-controller="Home" asp-action="Policy" asp-route-topic="bao-mat-thong-tin">Chính sách bảo mật thông tin</a></li>
+                        <li><a asp-controller="Home" asp-action="Policy" asp-route-topic="chinh-sach-van-chuyen">Chính sách vận chuyển, giao nhận</a></li>
+                        <li><a asp-controller="Home" asp-action="Policy" asp-route-topic="doi-tra-hoan-tien">Chính sách đổi/trả hàng và hoàn tiền</a></li>
+                        <li><a asp-controller="Home" asp-action="Policy" asp-route-topic="hinh-thuc-thanh-toan">Quy định và hình thức thanh toán</a></li>
+                        <li><a asp-controller="Home" asp-action="Policy" asp-route-topic="chinh-sach-kiem-hang">Chính sách kiểm hàng</a></li>
+                    </ul>
+
+                    <h6 class="fw-bold text-uppercase mb-3 footer-heading">BỘ CÔNG THƯƠNG</h6>
+                    <a asp-controller="Home" asp-action="Policy" asp-route-topic="quy-dinh-chung" class="d-inline-block text-decoration-none" title="Đã thông báo Bộ Công Thương">
+                        <svg width="205" height="64" viewBox="0 0 205 64" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Khung chữ nhật xanh bên phải -->
+                            <rect x="46" y="10" width="155" height="44" rx="8" fill="#0072bc"/>
+                            <!-- Vòng tròn trắng viền ngoài -->
+                            <circle cx="34" cy="32" r="30" fill="#ffffff"/>
+                            <!-- Vòng tròn xanh chính -->
+                            <circle cx="34" cy="32" r="26" fill="#0072bc"/>
+                            <!-- Dấu tích trắng -->
+                            <path d="M21 32 L30 42 L51 19" fill="none" stroke="#ffffff" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <!-- Chữ ONLINE.GOV.VN cong nhẹ phía trên vòng tròn -->
+                            <text x="14" y="19" fill="#ffffff" font-family="Arial, sans-serif" font-size="4.8" font-weight="700" transform="rotate(-28 24 22)">ONLINE.GOV.VN</text>
+                            <!-- Chữ ĐÃ THÔNG BÁO BỘ CÔNG THƯƠNG -->
+                            <text x="128" y="30" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-weight="800" font-size="13.5">ĐÃ THÔNG BÁO</text>
+                            <line x1="68" y1="35" x2="188" y2="35" stroke="#ffffff" stroke-width="1" stroke-opacity="0.7"/>
+                            <text x="128" y="47" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-weight="600" font-size="10.5">BỘ CÔNG THƯƠNG</text>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <hr class="my-4 text-secondary opacity-25" />
+            <div class="d-flex flex-wrap justify-content-between align-items-center small text-secondary">
+                <span>&copy; @DateTime.Now.Year Aquarium Store — Hệ thống Quản lý &amp; Bán hàng Sinh vật cảnh / Thủy sinh.</span>
+                <span>Đồ án 2 Chuyên ngành Kỹ thuật Phần mềm — ASP.NET Core MVC &amp; EF Core</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- FLOATING AI CHAT WIDGET (AquaBot AI) -->
+    <div id="ai-chat-widget" class="no-print">
+        <button id="ai-chat-toggle" type="button" class="ai-chat-fab shadow-lg" title="Chat với Trợ lý AI Thủy sinh">
+            <i class="bi bi-robot fs-4"></i>
+            <span class="ai-chat-fab-label d-none d-sm-inline">Tư vấn AI</span>
+            <span class="ai-chat-pulse"></span>
+        </button>
+
+        <div id="ai-chat-window" class="ai-chat-window shadow-lg" style="display: none;">
+            <div class="ai-chat-header d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="ai-avatar-circle">
+                        <i class="bi bi-robot"></i>
+                    </div>
+                    <div>
+                        <div class="fw-bold small">AquaBot AI — Chuyên gia Thủy sinh</div>
+                        <div class="ai-status-text"><span class="ai-dot"></span> Trực tuyến • Tra cứu kho thời gian thực</div>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center gap-1">
+                    <button type="button" id="ai-chat-clear" class="btn btn-sm text-white opacity-75" title="Làm mới cuộc trò chuyện">
+                        <i class="bi bi-arrow-clockwise"></i>
+                    </button>
+                    <button type="button" id="ai-chat-close" class="btn btn-sm text-white" title="Đóng">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div id="ai-chat-messages" class="ai-chat-messages">
+                <!-- Tin nhắn được render qua JS -->
+            </div>
+
+            <div id="ai-chat-quick" class="ai-chat-quick"> <!-- Thanh nút câu hỏi gợi ý nhanh cho khách hàng -->
+                <button type="button" class="ai-chip" data-prompt="Tư vấn nuôi tép cảnh Red Cherry, Tép Ong PRL và cầu rêu Marimo">🦐 Tép cảnh &amp; Cầu rêu</button>
+                <button type="button" class="ai-chip" data-prompt="Tư vấn chọn cần câu tôm tép Carbon và cần câu Lure">🎣 Cần câu tôm tép</button>
+                <button type="button" class="ai-chip" data-prompt="Gợi ý cá cảnh dễ nuôi cho người mới">🐠 Cá dễ nuôi</button>
+                <button type="button" class="ai-chip" data-prompt="Tư vấn trọn bộ setup bể thủy sinh 60cm">🌿 Setup bể 60cm</button>
+                <button type="button" class="ai-chip" data-prompt="Cách xử lý nước bể cá bị đục và rêu hại">💧 Xử lý nước đục</button>
+            </div>
+
+            <form id="ai-chat-form" class="ai-chat-input-bar">
+                <input type="text" id="ai-chat-input" class="form-control form-control-sm border-0"
+                       placeholder="Nhập câu hỏi (VD: Cá Betta nuôi chung cá gì, setup bể 60cm...)" autocomplete="off" />
+                <button type="submit" id="ai-chat-send" class="btn btn-primary btn-sm px-3">
+                    <i class="bi bi-send-fill"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL QUAY 360 ĐỘ & SOI CHI TIẾT SẢN PHẨM / CẦN CÂU 3D -->
+    <div class="modal fade no-print" id="viewer360Modal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden" style="background: #0b132b; color: #fff;">
+                <div class="modal-header border-bottom border-secondary border-opacity-25 px-4 py-3" style="background: linear-gradient(90deg, #0f172a 0%, #1e3a8a 100%);">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-warning text-dark fw-bold px-3 py-2 rounded-pill">
+                            <i class="bi bi-arrow-repeat me-1"></i>360° 3D STUDIO
+                        </span>
+                        <div>
+                            <h5 class="modal-title fw-bold mb-0" id="v360-title">Xem Xoay 360° &amp; Chi Tiết Sản Phẩm</h5>
+                            <small class="text-info" id="v360-subtitle">Nắm kéo chuột trái/phải trên hình hoặc bật Tự động xoay 360°</small>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body p-0">
+                    <div class="row g-0">
+                        <!-- Bàn xoay 360 độ bên trái -->
+                        <div class="col-lg-8 position-relative d-flex flex-column justify-content-between p-4" style="min-height: 460px; background: radial-gradient(circle at 50% 45%, #1e293b 0%, #090d16 100%);">
+                            <!-- Hiển thị góc xoay & độ phóng đại -->
+                            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 z-2">
+                                <span class="badge bg-dark bg-opacity-75 border border-info text-info px-3 py-2" id="v360-angle-badge">
+                                    <i class="bi bi-compass me-1"></i>Góc xoay: <strong>0°</strong> / 360°
+                                </span>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <button type="button" class="btn btn-sm btn-info fw-semibold text-dark" id="v360-bgremove-btn" title="Tự động tách nền trắng/nền sáng của ảnh">
+                                        <i class="bi bi-magic me-1"></i>Tách nền AI: BẬT
+                                    </button>
+                                    <div class="btn-group btn-group-sm">
+                                        <button type="button" class="btn btn-warning fw-bold text-dark" id="v360-autorotate-btn">
+                                            <i class="bi bi-play-circle-fill me-1"></i>Đang tự xoay 360°
+                                        </button>
+                                        <button type="button" class="btn btn-outline-info text-light" id="v360-reset-btn">
+                                            <i class="bi bi-arrow-counterclockwise me-1"></i>Đặt lại
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Khung 3D Perspective chứa ảnh xoay 360 độ đã tách nền cân đối -->
+                            <div id="v360-stage" class="v360-stage my-auto d-flex align-items-center justify-content-center position-relative" title="Kéo chuột sang trái hoặc phải để xoay 360 độ">
+                                <div id="v360-turntable" class="v360-turntable">
+                                    <img id="v360-img" src="" alt="360 Product View" class="v360-img" draggable="false" />
+                                    <div id="v360-glare" class="v360-glare"></div>
+                                </div>
+                                <!-- Vòng la bàn 3D dưới đáy sản phẩm -->
+                                <div class="v360-compass-ring" id="v360-ring"></div>
+                            </div>
+
+                            <!-- Thanh trượt điều khiển góc xoay 0 - 360 độ -->
+                            <div class="z-2 mt-2">
+                                <div class="d-flex align-items-center gap-3 bg-dark bg-opacity-75 p-3 rounded-4 border border-secondary border-opacity-25">
+                                    <span class="small text-nowrap text-warning fw-semibold"><i class="bi bi-arrows-move me-1"></i>Kéo xoay 360°:</span>
+                                    <input type="range" class="form-range" id="v360-slider" min="0" max="360" value="0" step="1" />
+                                    <div class="btn-group btn-group-sm flex-shrink-0">
+                                        <button type="button" class="btn btn-outline-info v360-zoom-btn active" data-zoom="1">1x</button>
+                                        <button type="button" class="btn btn-outline-info v360-zoom-btn" data-zoom="1.6">1.6x</button>
+                                        <button type="button" class="btn btn-outline-info v360-zoom-btn" data-zoom="2.2">2.2x</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bảng soi chi tiết từng bộ phận (Hotspots) bên phải -->
+                        <div class="col-lg-4 p-4 d-flex flex-column justify-content-between" style="background: #111827; border-left: 1px solid rgba(255,255,255,0.08);">
+                            <div>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="badge bg-info text-dark fw-semibold" id="v360-category">Cần câu &amp; Dụng cụ</span>
+                                    <span class="text-warning fw-bold fs-5" id="v360-price">195,000 ₫</span>
+                                </div>
+
+                                <h6 class="text-uppercase text-info small fw-bold mb-3">
+                                    <i class="bi bi-crosshair me-1"></i>Bấm chọn góc soi chi tiết:
+                                </h6>
+
+                                <div class="d-grid gap-2 mb-3" id="v360-hotspots">
+                                    <button type="button" class="v360-hotspot-btn text-start p-2 rounded-3 v360-hotspot active" data-angle="0" data-zoom="1" data-origin="50% 50%"
+                                            data-desc="Góc nhìn tổng thể 360°: Hình ảnh đã được tự động tách nền và cân bằng tỷ lệ giúp quan sát rõ nét mọi góc cạnh.">
+                                        <div class="fw-bold small text-warning" id="v360-hs1-title"><i class="bi bi-box me-1"></i>1. Góc Toàn Cảnh Xoay 360°</div>
+                                        <small class="text-light opacity-75" id="v360-hs1-sub">Quay trọn vòng 360 độ kiểm tra tổng thể</small>
+                                    </button>
+                                    <button type="button" class="v360-hotspot-btn text-start p-2 rounded-3 v360-hotspot" data-angle="25" data-zoom="2.0" data-origin="25% 75%"
+                                            data-desc="Phóng đại 2.0x phần gốc / tay cầm để kiểm tra độ hoàn thiện chi tiết và kết cấu bề mặt.">
+                                        <div class="fw-bold small text-info" id="v360-hs2-title"><i class="bi bi-hand-index-thumb me-1"></i>2. Soi Cận Cảnh Phần Gốc / Tay Cầm</div>
+                                        <small class="text-light opacity-75" id="v360-hs2-sub">Phóng to 2.0x kiểm tra chi tiết phần dưới</small>
+                                    </button>
+                                    <button type="button" class="v360-hotspot-btn text-start p-2 rounded-3 v360-hotspot" data-angle="180" data-zoom="1.8" data-origin="50% 50%"
+                                            data-desc="Lật góc đối diện 180° kết hợp phóng đại 1.8x vùng trung tâm để quan sát sắc tố màu và kết cấu thân.">
+                                        <div class="fw-bold small text-success" id="v360-hs3-title"><i class="bi bi-layers me-1"></i>3. Soi Mặt Đối Diện 180° &amp; Thân Giữa</div>
+                                        <small class="text-light opacity-75" id="v360-hs3-sub">Lật góc 180° kiểm tra vùng trung tâm</small>
+                                    </button>
+                                    <button type="button" class="v360-hotspot-btn text-start p-2 rounded-3 v360-hotspot" data-angle="335" data-zoom="2.2" data-origin="78% 22%"
+                                            data-desc="Phóng đại cực đại 2.2x vùng đỉnh / ngọn sản phẩm để kiểm tra các chi tiết nhỏ nhất.">
+                                        <div class="fw-bold small text-danger" id="v360-hs4-title"><i class="bi bi-lightning-charge me-1"></i>4. Soi Cận Cảnh Phần Ngọn / Đỉnh (2.2x)</div>
+                                        <small class="text-light opacity-75" id="v360-hs4-sub">Phóng to 2.2x kiểm tra chi tiết sắc nét</small>
+                                    </button>
+                                </div>
+
+                                <div class="p-3 rounded-3 bg-dark border border-info border-opacity-25 small text-light" id="v360-detail-box">
+                                    Góc nhìn tổng thể 360°: Thiết kế cân bằng trọng tâm chuẩn xác, lớp phủ bóng chống thấm nước và chống tia UV.
+                                </div>
+                            </div>
+
+                            <div class="mt-3 pt-3 border-top border-secondary border-opacity-25 d-flex gap-2">
+                                <a href="#" id="v360-detail-link" class="btn btn-primary flex-grow-1 fw-semibold">
+                                    <i class="bi bi-cart-check me-1"></i>Đến trang Đặt Mua
+                                </a>
+                                <button type="button" class="btn btn-outline-secondary text-light" data-bs-dismiss="modal">Đóng</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+
+    <!-- Cập nhật badge giỏ hàng -->
+    <script>
+        fetch('/Cart/GetCount')
+            .then(r => r.json())
+            .then(data => {
+                const badge = document.getElementById('cart-badge');
+                if (badge) {
+                    badge.textContent = data.count > 0 ? data.count : '';
+                    badge.style.display = data.count > 0 ? 'inline' : 'none';
+                }
+            })
+            .catch(() => {});
+    </script>
+</body>
+</html>
