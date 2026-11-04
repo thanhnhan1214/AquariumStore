@@ -208,7 +208,7 @@ function mountChat() {
   const panel = document.createElement("div");
   panel.className = "chat-panel no-print";
   panel.innerHTML = `<div class="chat-head d-flex align-items-center gap-2">
-      <span class="fs-4">🐠</span><div class="flex-grow-1"><div class="fw-bold">AquaBot AI</div><div class="small opacity-75">Trợ lý tư vấn thủy sinh</div></div>
+      <span class="fs-4"><i class="bi bi-robot"></i></span><div class="flex-grow-1"><div class="fw-bold">AquaBot AI</div><div class="small opacity-75">Trợ lý tư vấn thủy sinh</div></div>
       <button class="btn btn-sm text-white" id="chatClear" title="Xóa hội thoại"><i class="bi bi-arrow-counterclockwise"></i></button>
       <button class="btn-close btn-close-white" id="chatClose" aria-label="Đóng"></button></div>
     <div class="chat-body" id="chatBody"></div>
@@ -221,9 +221,9 @@ function mountChat() {
       <button class="btn btn-primary rounded-circle" aria-label="Gửi"><i class="bi bi-send-fill"></i></button></form>`;
   document.body.append(fab, panel);
   const body = $("#chatBody", panel);
-  const fmt = (t) => esc(t).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>").replace(/\[#(\d+)\]/g, (_, id) => ` <a href="/product?id=${id}">[xem]</a>`);
+  const fmt = (t) => esc(t).replace(/^\s*[*-]\s+/gm, "• ").replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>").replace(/\[#(\d+)\]/g, (_, id) => ` <a href="/product?id=${id}">[xem]</a>`);
   const draw = () => {
-    body.innerHTML = `<div class="msg bot">Xin chào! Mình là AquaBot 🐠. Mình có thể tư vấn chọn cá, tép, cây thủy sinh và thiết bị bể cho bạn.</div>` +
+    body.innerHTML = `<div class="msg bot">Xin chào! Mình là AquaBot. Mình có thể tư vấn chọn cá, tép, cây thủy sinh và thiết bị bể cho bạn.</div>` +
       history.map((m) => `<div class="msg ${m.role}">${m.role === "bot" ? fmt(m.text) : esc(m.text)}</div>`).join("");
     body.scrollTop = body.scrollHeight;
   };

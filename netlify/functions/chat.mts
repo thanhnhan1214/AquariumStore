@@ -41,7 +41,7 @@ ${catalog}`;
     const res = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: [...history, { role: "user", parts: [{ text: message }] }],
-      config: { systemInstruction: system, temperature: 0.6, maxOutputTokens: 800 },
+      config: { systemInstruction: system, temperature: 0.6, maxOutputTokens: 4096 },
     });
     reply = (res.text || "").trim();
   } catch (err) {

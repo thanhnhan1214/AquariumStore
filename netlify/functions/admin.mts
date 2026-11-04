@@ -51,7 +51,7 @@ export default handle(async (req, ctx) => {
       if (m === "GET") {
         const list = await db.select({
           id: categories.id, name: categories.name, description: categories.description, isActive: categories.isActive,
-          productCount: sql<number>`(select count(*) from ${products} where category_id = ${categories.id})::int`,
+          productCount: sql<number>`(select count(*) from products p where p.category_id = "categories"."id")::int`,
         }).from(categories).orderBy(asc(categories.id));
         return json({ categories: list });
       }
@@ -207,7 +207,7 @@ export default handle(async (req, ctx) => {
         const list = await db.select({
           id: users.id, username: users.username, fullName: users.fullName, email: users.email, phone: users.phone,
           role: roles.name, isActive: users.isActive, createdAt: users.createdAt,
-          orderCount: sql<number>`(select count(*) from ${orders} where user_id = ${users.id})::int`,
+          orderCount: sql<number>`(select count(*) from orders o where o.user_id = "users"."id")::int`,
         }).from(users).innerJoin(roles, eq(roles.id, users.roleId))
           .where(q ? sql`(${ilike(users.fullName, `%${q}%`)} or ${ilike(users.username, `%${q}%`)} or ${ilike(users.email, `%${q}%`)})` : undefined)
           .orderBy(asc(users.id));

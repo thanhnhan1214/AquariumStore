@@ -8,15 +8,15 @@ const PAYMENTS = ["COD", "Chuyển khoản"];
 
 export default handle(async (req, ctx) => {
   const me = await requireUser(req);
-  const id = ctx.params.id ? int(ctx.params.id) : null;
-  const action = ctx.params.action as string | undefined;
+  const [rawId, action] = new URL(req.url).pathname.replace(/^\/api\/orders\/?/, "").split("/").filter(Boolean);
+  const id = rawId ? int(rawId) : null;
 
   // Danh sách đơn của tôi
   if (id === null && req.method === "GET") {
     const list = await db.select({
       id: orders.id, orderDate: orders.orderDate, totalAmount: orders.totalAmount, status: orders.status,
       paymentMethod: orders.paymentMethod,
-      itemCount: sql<number>`(select coalesce(sum(quantity),0) from ${orderDetails} where order_id = ${orders.id})::int`,
+      itemCount: sql<number>`(select coalesce(sum(od.quantity),0) from order_details od where od.order_id = "orders"."id")::int`,
     }).from(orders).where(eq(orders.userId, me.id)).orderBy(desc(orders.orderDate));
     return json({ orders: list });
   }

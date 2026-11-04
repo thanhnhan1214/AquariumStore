@@ -9,8 +9,8 @@ const MAX = 4 * 1024 * 1024;
 export default handle(async (req, ctx) => {
   const store = getStore({ name: "product-images", consistency: "strong" });
 
-  if (req.method === "GET" && ctx.params.key) {
-    const key = String(ctx.params.key);
+  const key = decodeURIComponent(new URL(req.url).pathname.replace(/^\/api\/images\/?/, ""));
+  if (req.method === "GET" && key) {
     if (!/^[a-f0-9-]{36}\.(jpg|png|webp|gif)$/.test(key)) return new Response("Not found", { status: 404 });
     const res = await store.getWithMetadata(key, { type: "arrayBuffer" });
     if (!res) return new Response("Not found", { status: 404 });

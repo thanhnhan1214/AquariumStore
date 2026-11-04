@@ -1,6 +1,6 @@
 import type { Config } from "@netlify/functions";
 import { and, asc, desc, eq, sql } from "drizzle-orm";
-import { db, products, categories, orderDetails, orders } from "../../db/index.js";
+import { db, products, categories } from "../../db/index.js";
 import { handle, json, HttpError, int } from "../lib/http.js";
 
 const productCols = {
@@ -10,7 +10,8 @@ const productCols = {
 };
 
 export default handle(async (req, ctx) => {
-  const id = ctx.params.id ? int(ctx.params.id) : null;
+  const seg = new URL(req.url).pathname.replace(/^\/api\/catalog\/?/, "").replace(/\/$/, "");
+  const id = seg ? int(seg) : null;
 
   if (id !== null) {
     if (Number.isNaN(id)) throw new HttpError(404, "Không tìm thấy sản phẩm.");
@@ -29,7 +30,7 @@ export default handle(async (req, ctx) => {
     .from(categories).where(eq(categories.isActive, true)).orderBy(asc(categories.id));
   const list = await db.select({
     ...productCols,
-    sold: sql<number>`coalesce((select sum(od.quantity) from ${orderDetails} od join ${orders} o on o.id = od.order_id where od.product_id = ${products.id} and o.status <> 'Đã hủy'), 0)::int`,
+    sold: sql<number>`coalesce((select sum(od.quantity) from order_details od join orders o on o.id = od.order_id where od.product_id = "products"."id" and o.status <> 'Đã hủy'), 0)::int`,
   }).from(products)
     .innerJoin(categories, eq(categories.id, products.categoryId))
     .where(and(eq(products.isActive, true), eq(categories.isActive, true)))

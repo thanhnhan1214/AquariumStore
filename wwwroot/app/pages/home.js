@@ -15,11 +15,11 @@ app.innerHTML = `
         <button class="btn btn-outline-light btn-lg rounded-pill px-4" id="askBot"><i class="bi bi-chat-dots me-1"></i>Hỏi AquaBot</button>
       </div>
     </div>
-    <div class="col-lg-5 d-none d-lg-block text-center"><div style="font-size:9rem;line-height:1">🐠🌿</div></div>
+    <div class="col-lg-5 d-none d-lg-block text-center"><i class="bi bi-water" style="font-size:11rem;line-height:1;opacity:.85"></i></div>
   </div>
 </section>
 <section class="mb-5"><h2 class="h4 mb-3">Danh mục nổi bật</h2><div class="row g-3" id="cats">${loading()}</div></section>
-<section class="mb-5"><div class="d-flex justify-content-between align-items-end mb-3"><h2 class="h4 mb-0">🔥 Bán chạy nhất</h2><a href="/products?sort=best">Xem tất cả</a></div><div class="row g-3" id="best"></div></section>
+<section class="mb-5"><div class="d-flex justify-content-between align-items-end mb-3"><h2 class="h4 mb-0"><i class="bi bi-fire text-danger"></i> Bán chạy nhất</h2><a href="/products?sort=best">Xem tất cả</a></div><div class="row g-3" id="best"></div></section>
 <section class="mb-5"><div class="d-flex justify-content-between align-items-end mb-3"><h2 class="h4 mb-0">Hàng mới về</h2><a href="/products">Xem tất cả</a></div><div class="row g-3" id="latest"></div></section>
 <section class="row g-3 text-center">
   ${[["bi-truck", "Giao hàng an toàn", "Đóng túi oxy, thùng xốp giữ nhiệt"], ["bi-shield-check", "Bảo hành sống 24h", "Đổi mới nếu cá chết khi nhận"], ["bi-qr-code-scan", "Thanh toán VietQR", "Quét mã chuyển khoản tự động"], ["bi-robot", "AquaBot AI", "Tư vấn setup bể 24/7"]]
@@ -27,11 +27,11 @@ app.innerHTML = `
 </section>`;
 $("#askBot").onclick = () => document.querySelector(".chat-fab")?.click();
 
-const icons = ["🐟", "🐠", "🌿", "💡", "🍤", "🪵", "🦐", "🎣"];
+const icons = ["droplet-half", "tsunami", "flower1", "lightbulb", "basket", "tree", "bug", "tools"];
 try {
   const { categories, products } = await api("/api/catalog");
   $("#cats").innerHTML = categories.map((c, i) => `<div class="col-6 col-md-3"><a href="/products?category=${c.id}" class="card-soft bg-white p-3 d-flex align-items-center gap-3 text-decoration-none text-body h-100">
-    <span class="fs-2">${icons[i % icons.length]}</span><div><div class="fw-semibold">${esc(c.name)}</div><div class="small text-secondary">${products.filter((p) => p.categoryId === c.id).length} sản phẩm</div></div></a></div>`).join("");
+    <span class="fs-3 text-ocean bg-foam rounded-3 d-grid" style="width:52px;height:52px;place-items:center"><i class="bi bi-${icons[i % icons.length]}"></i></span><div><div class="fw-semibold">${esc(c.name)}</div><div class="small text-secondary">${products.filter((p) => p.categoryId === c.id).length} sản phẩm</div></div></a></div>`).join("");
   const best = [...products].sort((a, b) => b.sold - a.sold).slice(0, 4);
   $("#best").innerHTML = best.map(productCard).join("");
   $("#latest").innerHTML = products.slice(0, 8).map(productCard).join("");
