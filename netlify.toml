@@ -1,6 +1,7 @@
 [build]
-  publish = "wwwroot"
-  command = "echo 'No build step'"
+  # Giao diện Netlify nằm trong netlify-web/, ảnh sản phẩm lấy từ wwwroot/ (không sửa code gốc)
+  publish = "dist"
+  command = "rm -rf dist && mkdir -p dist && cp -r netlify-web/. dist/ && cp -r wwwroot/images wwwroot/favicon.ico dist/"
 
 [functions]
   directory = "netlify/functions"

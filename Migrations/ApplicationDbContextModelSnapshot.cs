@@ -298,7 +298,7 @@ namespace AquariumStore.Migrations
                             CategoryId = 3,
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Cây thủy sinh lá tròn nhỏ, trải thảm đẹp. Cần CO2 và ánh sáng mạnh.",
-                            ImageUrl = "/images/products/d01fddbb-6561-4efc-9bf7-0c52e2742238.png",
+                            ImageUrl = "/images/products/5aa87c4e-0ff5-4be3-b86a-8d5b41746963.png",
                             IsActive = true,
                             Price = 35000m,
                             ProductName = "Cây Trân Châu Ngọc Trai",

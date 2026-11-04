@@ -255,7 +255,7 @@ namespace AquariumStore.Data // Khai báo không gian tên cho tầng truy cập
                     Description = "Cần câu cá Lure Ultra-Light (UL) sợi Carbon xoắn X chịu tải cao, dàn khoen sứ chống xoắn dây, tay cầm bần êm ái chuyên trị cá suối, cá rô, cá lóc nhỏ.", // Mô tả chi tiết
                     Price = 460000m, // Giá bán 460.000đ / chiếc
                     StockQuantity = 15, // Tồn kho 15 chiếc
-                    ImageUrl = "/images/products/7599a23e-022b-4f2f-84f9-fc8af2c51f24.png", // Đường dẫn ảnh thực tế
+                    ImageUrl = "/images/products/68b261bc-f23f-4fe2-aacc-e9df6f218194.png", // Đường dẫn ảnh thực tế
                     CreatedAt = DateTime.Now.AddDays(-1), // Ngày tạo
                     IsActive = true // Đang kinh doanh
                 }, // Đóng khối thuộc tính
@@ -266,7 +266,7 @@ namespace AquariumStore.Data // Khai báo không gian tên cho tầng truy cập
                     Description = "Vợt lưới 3D giữ form cứng cáp dưới nước, mắt lưới siêu mịn không làm gãy râu hay tổn thương chân tép cảnh. Cán Inox 304 rút gọn 18cm – kéo dài 55cm.", // Mô tả chi tiết
                     Price = 35000m, // Giá bán 35.000đ / chiếc
                     StockQuantity = 50, // Tồn kho 50 chiếc
-                    ImageUrl = "/images/products/6034ce93-d457-4bfb-b1aa-cbfb766d3237.png", // Đường dẫn ảnh thực tế
+                    ImageUrl = "/images/products/8a606044-b4f4-4f53-a208-0b3b9389f674.png", // Đường dẫn ảnh thực tế
                     CreatedAt = DateTime.Now.AddDays(-1), // Ngày tạo
                     IsActive = true // Đang kinh doanh
                 } // Đóng khối thuộc tính
